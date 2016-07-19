@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shopping_list_new_item_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/shopping_list_item_outer_padding"
+    android:paddingBottom="0dp">
+
+    <!-- TODO i want round / custom checkbox graphics: http://www.programering.com/a/MzM5QTMwATM.html -->
+
+    <ImageButton
+        android:id="@+id/shopping_list_new_item_add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/shopping_list_item_checkbox_margin"
+        android:gravity="center"
+        android:src="@drawable/ic_add_black_18dp"
+        android:background="@android:color/transparent"/>
+
+    <EditText
+        android:id="@+id/shopping_list_new_item_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/shopping_list_new_item_add_button"
+        android:layout_toEndOf="@+id/shopping_list_new_item_add_button"
+        android:layout_toLeftOf="@+id/shopping_list_new_item_category_imagebutton"
+        android:layout_toStartOf="@+id/shopping_list_new_item_category_imagebutton"
+        android:layout_marginTop="@dimen/shopping_list_item_checkbox_margin"
+        android:inputType="text"
+        android:lines="1"/>
+
+    <ImageButton
+        android:id="@+id/shopping_list_new_item_category_imagebutton"
+        android:layout_width="@dimen/shopping_list_item_category_squaresize"
+        android:layout_height="@dimen/shopping_list_item_category_squaresize"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/shopping_list_item_checkbox_margin"
+        android:src="@android:drawable/sym_call_incoming"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"/>
+
+</RelativeLayout>

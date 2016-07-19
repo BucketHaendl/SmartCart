@@ -1,0 +1,24 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/shopping_list_overview_new_list_menuitem"
+        android:title="@string/shopping_list_overview_new_list_menuitem"
+        android:icon="@drawable/ic_add_white_24dp"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/load_shoppinglists"
+        android:title="Load Lists"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/save_shoppinglists"
+        android:title="Save Lists"
+        android:orderInCategory="200"
+        app:showAsAction="never" />
+
+</menu>

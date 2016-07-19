@@ -1,0 +1,47 @@
+<resources>
+
+    <!-- General resources -->
+    <string name="application_name">SmartCart</string>
+
+    <!-- activity_home -->
+    <string name="home_activity_actionbar_title">SmartCart</string>
+    <string name="home_activity_write_shoppinglist_button_desc">Write shopping list</string>
+    <string name="home_activity_go_shopping_button_desc">Go shopping</string>
+
+    <string name="home_activity_write_shoppinglist_button_text">Write\nshopping list</string>
+    <string name="home_activity_go_shopping_button_text">Go shopping</string>
+
+    <!-- activity_shopping_list_overview -->
+    <string name="shopping_list_overview_activity_actionbar_title">Shopping lists</string>
+
+    <!-- activity_shopping_list_overview actionbar -->
+    <string name="shopping_list_overview_new_list_menuitem">New List</string>
+
+    <!-- shopping_list_overview_listitem -->
+    <string name="shopping_list_overview_listitem_circle_imageview_desc">Go shopping</string>
+    <string name="shopping_list_overview_listitem_date_today">today</string>
+    <string name="shopping_list_overview_listitem_date_yesterday">yesterday</string>
+    <string name="shopping_list_overview_listitem_info_product">products</string>
+
+    <!-- activity_shopping_list_details -->
+
+    <string name="shopping_list_details_activity_title">Default</string>
+
+    <!-- activity_shopping_list_add -->
+
+    <string name="shopping_list_add_activity_new_list_name">New List</string>
+
+    <!-- error dialog -->
+    <string name="error_dialog_error_title">Error</string>
+    <string name="error_dialog_ok">Ok</string>
+    <string name="error_dialog_retry">Retry</string>
+    <string name="error_dialog_ignore">Ignore</string>
+
+    <!-- error messages -->
+    <string name="error_01">ERROR 01: Shopping lists could not be loaded from file! Is your SD-card not inserted or full? You may restart the app or try again later</string>
+    <string name="error_02">ERROR 02: Shopping lists could not be loaded from file! Something is wrong with the file</string>
+    <string name="error_03">ERROR 03: Shopping lists could not be saved to file! Is your SD-card not inserted or full?</string>
+    <string name="color_chooser_item_contentdescription">color</string>
+    <string name="shopping_list_add_name_hint">New List</string>
+
+</resources>

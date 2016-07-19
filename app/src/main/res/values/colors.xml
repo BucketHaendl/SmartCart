@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- SmartCart Logo Color Palette -->
+
+    <color name="smartcart_color_blue">#00BCFF</color>
+    <color name="smartcart_color_darkgray">#2F2F2F</color> <!-- actually, the color from the logo is #0F0F0F, but slightly transparent -->
+    <color name="smartcart_color_darkgray_true">#0F0F0F</color>
+
+    <color name="colorPrimary">@color/smartcart_color_darkgray</color>
+    <color name="colorPrimaryDark">@color/smartcart_color_darkgray_true</color>
+    <color name="colorAccent">@color/smartcart_color_blue</color>
+
+    <color name="black">#000000</color>
+    <color name="dark_gray">#1F1F1F</color>
+    <color name="white">#FFFFFF</color>
+
+</resources>

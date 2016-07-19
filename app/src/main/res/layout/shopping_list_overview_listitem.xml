@@ -1,0 +1,56 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/shopping_list_overview_listitem_padding" >
+
+    <ImageView
+        android:id="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_width="@dimen/shopping_list_overview_listitem_circle_image"
+        android:layout_height="@dimen/shopping_list_overview_listitem_circle_image"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="@dimen/shopping_list_overview_listitem_half_padding"
+        android:layout_marginEnd="@dimen/shopping_list_overview_listitem_half_padding"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/shopping_list_overview_listitem_circle_imageview_desc"/>
+
+    <TextView
+        android:id="@+id/shopping_list_overview_listitem_title_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_toRightOf="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_toEndOf="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_toLeftOf="@+id/shopping_list_overview_listitem_date_textview"
+        android:layout_toStartOf="@+id/shopping_list_overview_listitem_date_textview"
+        android:layout_marginRight="@dimen/shopping_list_overview_listitem_half_padding"
+        android:layout_marginEnd="@dimen/shopping_list_overview_listitem_half_padding"
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/shopping_list_overview_listitem_date_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/shopping_list_overview_listitem_info_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shopping_list_overview_listitem_title_textview"
+        android:layout_alignBottom="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_toRightOf="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_toEndOf="@+id/shopping_list_overview_listitem_circle_imageview"
+        android:layout_toLeftOf="@+id/shopping_list_overview_listitem_date_textview"
+        android:layout_toStartOf="@+id/shopping_list_overview_listitem_date_textview"
+        android:maxLines="2"
+        android:gravity="center_vertical"
+        android:ellipsize="end"/>
+
+</RelativeLayout>

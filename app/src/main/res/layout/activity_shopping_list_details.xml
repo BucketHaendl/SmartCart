@@ -1,0 +1,91 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_shopping_list_details_coordinatorlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/activity_shopping_list_details_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/activity_shopping_list_details_wrapper_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:background="?attr/colorPrimary" >
+
+        <!-- TODO change static 200dp value to a good value! + currently no collapsing Toolbar (by now!) -->
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/activity_shopping_list_details_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/shopping_list_details_activity_title"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <!-- TODO is white the ideal value here? -->
+
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:id="@+id/activity_shopping_list_details_tools_linearlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <!-- TODO change static 50dp value! is this really the right value? -->
+
+            <ImageButton
+                android:id="@+id/activity_shopping_list_details_options_edit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/menu_item_clickable_region_squaresize"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_mode_edit_white_24dp"
+                android:scaleType="center"/>
+
+            <ImageButton
+                android:id="@+id/activity_shopping_list_details_options_reminder"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/menu_item_clickable_region_squaresize"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_alarm_white_24dp"
+                android:scaleType="center"/>
+
+            <ImageButton
+                android:id="@+id/activity_shopping_list_details_options_delete"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/menu_item_clickable_region_squaresize"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_delete_white_24dp"
+                android:scaleType="center"/>
+
+            <!-- TODO make sure, that the scale type is so that the icons are not resized! -->
+
+        </LinearLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/activity_shopping_list_details_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/shopping_list_default_fab_margin"
+        android:layout_marginEnd="@dimen/shopping_list_default_fab_margin"
+        android:layout_marginBottom="@dimen/shopping_list_default_fab_margin"
+        android:src="@drawable/ic_shopping_cart_white_48dp"
+        android:layout_gravity="bottom|end"/>
+
+</android.support.design.widget.CoordinatorLayout>

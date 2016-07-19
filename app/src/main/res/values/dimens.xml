@@ -1,0 +1,39 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="menu_item_icon_region_squaresize">24dp</dimen>
+    <dimen name="menu_item_clickable_region_squaresize">48dp</dimen>
+
+    <dimen name="avatar_icon_list_region_squaresize">40dp</dimen>
+    <dimen name="avatar_clickable_list_region_squaresize">48dp</dimen>
+
+    <!-- FAB margin -->
+    <dimen name="shopping_list_default_fab_margin">20dp</dimen>
+
+    <!-- ShoppingListOverviewFragment list item-->
+    <dimen name="shopping_list_overview_listitem_circle_image">60dp</dimen>
+    <dimen name="shopping_list_overview_listitem_padding">20dp</dimen>
+    <dimen name="shopping_list_overview_listitem_half_padding">10dp</dimen>
+
+    <!-- ShoppingListDetails -->
+    <dimen name="shopping_list_item_checkbox_margin">10dp</dimen>
+    <dimen name="shopping_list_item_outer_padding">5dp</dimen>
+    <dimen name="shopping_list_item_category_squaresize">25dp</dimen>
+
+    <!-- ShoppingListAdd -->
+    <dimen name="shopping_list_add_color_chooser_margin_horizontal">5dp</dimen>
+    <dimen name="shopping_list_add_color_chooser_margin_vertical">15dp</dimen>
+    <dimen name="shopping_list_add_title_textsize">26sp</dimen>
+
+    <!-- ColorItem -->
+    <dimen name="color_chooser_item_margin_horizontal_margin">10dp</dimen>
+    <dimen name="color_chooser_item_squaresize">20dp</dimen>
+
+    <!-- MaterialChooser -->
+    <dimen name="shopping_list_material_chooser_margin">10dp</dimen>
+    <dimen name="shopping_list_material_chooser_icon_squaresize">20dp</dimen>
+
+</resources>
