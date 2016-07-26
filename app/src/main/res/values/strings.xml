@@ -1,5 +1,9 @@
 <resources>
 
+    <!-- ID resources -->
+    <string name="shopping_list_view_holder_tag" type="id" />
+    <string name="shopping_list_object_tag" type="id" />
+
     <!-- General resources -->
     <string name="application_name">SmartCart</string>
 
@@ -27,7 +31,7 @@
 
     <string name="shopping_list_details_activity_title">Default</string>
 
-    <!-- activity_shopping_list_add -->
+    <!-- activity_shopping_list_new -->
 
     <string name="shopping_list_add_activity_new_list_name">New List</string>
 
@@ -41,7 +45,13 @@
     <string name="error_01">ERROR 01: Shopping lists could not be loaded from file! Is your SD-card not inserted or full? You may restart the app or try again later</string>
     <string name="error_02">ERROR 02: Shopping lists could not be loaded from file! Something is wrong with the file</string>
     <string name="error_03">ERROR 03: Shopping lists could not be saved to file! Is your SD-card not inserted or full?</string>
-    <string name="color_chooser_item_contentdescription">color</string>
+    <string name="icon_chooser_item_contentdescription">Icon</string>
     <string name="shopping_list_add_name_hint">New List</string>
+    <string name="delete">Delete</string>
+    <string name="confirm_delete_shopping_list">Really delete shopping list %1$s</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="item_not_recognized">Item %s not known</string>
+    <string name="edit">Edit</string>
 
 </resources>

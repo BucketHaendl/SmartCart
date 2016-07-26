@@ -4,6 +4,7 @@
 
     <!-- use android:logo to set a custom logo for the ActionBars! don't forget to call .setUseLogo(true) -->
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
@@ -23,8 +24,8 @@
             android:name=".activities.shoppinglist.ShoppingListDetailsActivity"
             android:parentActivityName=".activities.shoppinglist.ShoppingListHubActivity" />
         <activity
-            android:name=".activities.shoppinglist.ShoppingListAddActivity"
-            android:parentActivityName=".activities.shoppinglist.ShoppingListHubActivity"/>
+            android:name=".activities.shoppinglist.ShoppingListNewActivity"
+            android:parentActivityName=".activities.shoppinglist.ShoppingListHubActivity" />
     </application>
 
 </manifest>

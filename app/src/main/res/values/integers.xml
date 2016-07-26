@@ -2,5 +2,7 @@
 <resources>
 
     <integer name="activity_home_buttons_alpha">180</integer>
+    <integer name="shopping_list_view_holder_tag_key">864635</integer>
+    <integer name="shopping_list_object_tag_key">445756</integer>
 
 </resources>

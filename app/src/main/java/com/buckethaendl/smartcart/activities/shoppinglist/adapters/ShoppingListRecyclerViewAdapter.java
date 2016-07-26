@@ -1,32 +1,22 @@
 package com.buckethaendl.smartcart.activities.shoppinglist.adapters;
 
-import android.media.Image;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.method.KeyListener;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.buckethaendl.smartcart.R;
-import com.buckethaendl.smartcart.activities.shoppinglist.MaterialChooser;
-import com.buckethaendl.smartcart.activities.shoppinglist.ShoppingListAddActivity;
-import com.buckethaendl.smartcart.objects.shoppingList.Material;
-import com.buckethaendl.smartcart.objects.shoppingList.ShoppingList;
-import com.buckethaendl.smartcart.objects.shoppingList.ShoppingListItem;
-
-import java.util.Arrays;
-import java.util.List;
+import com.buckethaendl.smartcart.activities.shoppinglist.listeners.ShoppingItemCheckListener;
+import com.buckethaendl.smartcart.activities.shoppinglist.listeners.ShoppingItemClickListener;
+import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
+import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
+import com.buckethaendl.smartcart.util.DialogBuildingSite;
 
 /**
  * Created by Cedric on 31.03.2016.
@@ -36,7 +26,7 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
     private ShoppingList list;
 
     private ShoppingItemClickListener shoppingItemClickListener;
-    private ShoppingItemCheckedListener shoppingItemCheckedListener; //TODO register a listener if needed?
+    private ShoppingItemCheckListener shoppingItemCheckListener;
 
     public ShoppingListRecyclerViewAdapter(ShoppingList list) {
 
@@ -56,34 +46,22 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
     }
 
     @Override
-    public void onBindViewHolder(final ShoppingItemViewHolder holder, int position) {
+    public void onBindViewHolder(final ShoppingItemViewHolder holder, final int position) {
 
-        final ShoppingListItem item = this.list.getItem(position);
+        final ShoppingListItem item = this.list.get(position);
+        final Context context = holder.getView().getContext();
 
-        //Set up check listener
-        CheckBox box = (CheckBox) holder.getView().findViewById(R.id.shopping_list_item_checkbox);
-        box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        //Set the data of this shopping list item to the views in the holder
+        View rootView = holder.getView();
 
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                item.setChecked(isChecked);
-
-                if(getShoppingItemCheckedListener() != null) {
-
-                    getShoppingItemCheckedListener().onCheckShoppingItem(item, holder.getAdapterPosition(), isChecked);
-
-                }
-
-            }
-
-        });
-
-        //Set up content listener
-        holder.getView().setOnClickListener(new View.OnClickListener() {
+        //Set up content listener todo remove long - just for deletion now!
+        rootView.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
-            public void onClick(View view) {
+            public boolean onLongClick(View view) {
+
+                ShoppingListRecyclerViewAdapter.this.list.remove(item);
+                ShoppingListRecyclerViewAdapter.this.notifyDataSetChanged();
 
                 if(getShoppingItemClickListener() != null) {
 
@@ -91,114 +69,83 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
 
                 }
 
+                return true;
+
             }
 
         });
 
-        //Set up material chooser listener
-        holder.getView().findViewById(R.id.shopping_list_item_category_imagebutton).setOnClickListener(new ChooseMaterialClickListener(holder, item));
+        final CheckBox checkBox = holder.getCheckBox();
+        checkBox.setChecked(item.isChecked());
 
-        //Set the data of this shopping list item to the views in the holder
-        View rootView = holder.getView();
+        //Set up check listener
+        checkBox.setOnClickListener(new View.OnClickListener() {
 
-        CheckBox checked = (CheckBox) rootView.findViewById(R.id.shopping_list_item_checkbox);
-        checked.setChecked(item.isChecked());
+            @Override
+            public void onClick(View view) {
 
-        TextView name = (TextView) rootView.findViewById(R.id.shopping_list_item_textview);
-        name.setText(item.getName());
+                item.setChecked(checkBox.isChecked());
+                if(getShoppingItemCheckedListener() != null) {
 
-        ImageButton category = (ImageButton) rootView.findViewById(R.id.shopping_list_item_category_imagebutton);
-        category.setImageResource(item.getMaterial().getIconResourceId());
-        category.setContentDescription(item.getMaterial().getName());
+                    getShoppingItemCheckedListener().onCheckShoppingItem(item, holder.getAdapterPosition(), checkBox.isChecked());
 
-        //TODO implement a property animation to reveal the item
-
-
-            /*
-            //initialize variables
-            this.itemNameText = (EditText) holder.getView().findViewById(R.id.shopping_list_new_item_edittext);
-            this.materialIconImage = (ImageButton) holder.getView().findViewById(R.id.shopping_list_new_item_category_imagebutton);
-
-            //set the keylistener for the edittext
-            itemNameText.setKeyListener(new KeyListener() {
-
-                @Override
-                public int getInputType() {
-                    return itemNameText.getInputType();
                 }
 
-                @Override
-                public boolean onKeyDown(View view, Editable text, int keyCode, KeyEvent event) {
+            }
 
-                    boolean isEnterKey = (keyCode == KeyEvent.KEYCODE_ENTER);
+        });
 
-                    if (isEnterKey) {
+        TextView textView = holder.getTextView();
+        textView.setText(item.getName());
 
-                        if(getAddItemListener() != null) {
+        final ImageButton error = holder.getImageButton();
 
-                            String name = getAddItemName();
-                            int materialIconResourceId = getAddItemCategoryId();
+        if(item.isUnknown()) error.setVisibility(View.VISIBLE);
+        else error.setVisibility(View.INVISIBLE);
 
-                            getAddItemListener().onAddItemListener(name, materialIconResourceId);
+        //Set up error checker
+        error.setOnClickListener(new View.OnClickListener() {
 
-                            Log.v("ShoppingListAddActivity", "Enter-Key pressed: Added new item " + name);
+            @Override
+            public void onClick(View view) {
 
-                        }
+                //show error dialog
+                final AlertDialog errorDialog = DialogBuildingSite.buildErrorDialog(context, context.getString(R.string.item_not_recognized, item.getName()));
+                errorDialog.setCancelable(true);
+
+                //ok button
+                errorDialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.error_dialog_ok), new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        errorDialog.dismiss();
 
                     }
 
-                    return isEnterKey;
+                });
 
-                }
+                //no ignore button
+                errorDialog.setButton(DialogInterface.BUTTON_NEGATIVE, null, new DialogInterface.OnClickListener() {
 
-                @Override
-                public boolean onKeyUp(View view, Editable text, int keyCode, KeyEvent event) {
-                    return false;
-                }
-
-                @Override
-                public boolean onKeyOther(View view, Editable text, KeyEvent event) {
-                    return false;
-                }
-
-                @Override
-                public void clearMetaKeyState(View view, Editable content, int states) {
-                }
-
-            });
-
-            //set the onClickListener for the add button
-            final ImageButton itemAddButton = (ImageButton) holder.getView().findViewById(R.id.shopping_list_new_item_add_button);
-            itemAddButton.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    if(getAddItemListener() != null) {
-
-                        String name = getAddItemName();
-                        int materialIconResourceId = getAddItemCategoryId();
-
-                        getAddItemListener().onAddItemListener(name, materialIconResourceId);
-
-                        Log.v("ShoppingListAddActivity", "Add button pressed: Added new item " + name);
-
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
                     }
 
-                }
+                });
 
-            });
+                errorDialog.show();
 
-            //maybe set a listener for the keyboard-close event as well
+            }
 
-            */
+        });
 
     }
 
     @Override
     public int getItemCount() {
 
-        return this.list.getItemsCount();
+        return this.list.size();
 
     }
 
@@ -210,81 +157,48 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
         this.shoppingItemClickListener = shoppingItemClickListener;
     }
 
-    public ShoppingItemCheckedListener getShoppingItemCheckedListener() {
-        return shoppingItemCheckedListener;
+    public ShoppingItemCheckListener getShoppingItemCheckedListener() {
+        return shoppingItemCheckListener;
     }
 
-    public void setShoppingItemCheckedListener(ShoppingItemCheckedListener shoppingItemCheckedListener) {
-        this.shoppingItemCheckedListener = shoppingItemCheckedListener;
+    public void setShoppingItemCheckedListener(ShoppingItemCheckListener shoppingItemCheckListener) {
+        this.shoppingItemCheckListener = shoppingItemCheckListener;
     }
 
     public static class ShoppingItemViewHolder extends RecyclerView.ViewHolder {
 
         private View view;
 
+        private CheckBox checkBox;
+        private TextView textView;
+        private ImageButton imageButton;
+
         public ShoppingItemViewHolder(View view) { //View is in this case a RelativeLayout or whatever root view was chosen for the listitems or a FrameLayout or so
 
             super(view);
             this.view = view;
 
+            this.checkBox = (CheckBox) view.findViewById(R.id.shopping_list_item_checkbox);
+            this.textView = (TextView) view.findViewById(R.id.shopping_list_item_textview);
+            this.imageButton = (ImageButton) view.findViewById(R.id.shopping_list_item_error_imagebutton);
+
         }
 
         public View getView() {
-
-            return this.view;
-
+            return view;
         }
 
-    }
-
-    //für den material / category chooser
-    private class ChooseMaterialClickListener implements AdapterView.OnClickListener, MaterialChooser.MaterialChosenListener {
-
-        private ShoppingItemViewHolder holder;
-        private ShoppingListItem item;
-
-        public ChooseMaterialClickListener(ShoppingItemViewHolder holder, ShoppingListItem item) {
-
-            this.holder = holder;
-            this.item = item;
-
-
+        public CheckBox getCheckBox() {
+            return checkBox;
         }
 
-        @Override
-        public void onClick(View view) {
-
-            ImageView button = (ImageView) view; //maybe set the drawable resource to something else
-
-            List<Material> materialList = Arrays.asList(Material.values());
-            MaterialChooser chooser = new MaterialChooser(view.getContext(), view, materialList, this);
-
-            chooser.show();
-
+        public TextView getTextView() {
+            return textView;
         }
 
-        @Override
-        public void onMaterialChosen(Material material) {
-
-            Log.v("ShoppingListRecyclerAd", "Material " + material.getName() + " chosen - now changing");
-
-            //change the material of the shoppinglistitem
-            this.item.setMaterial(material);
-            ShoppingListRecyclerViewAdapter.this.notifyItemChanged(holder.getAdapterPosition());
-
+        public ImageButton getImageButton() {
+            return imageButton;
         }
-
-    }
-
-    public interface ShoppingItemClickListener {
-
-        public void onClickShoppingItem(ShoppingListItem item, int position);
-
-    }
-
-    public interface ShoppingItemCheckedListener {
-
-        public void onCheckShoppingItem(ShoppingListItem item, int position, boolean checked);
 
     }
 

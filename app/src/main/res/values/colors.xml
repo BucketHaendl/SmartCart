@@ -3,13 +3,20 @@
 
     <!-- SmartCart Logo Color Palette -->
 
-    <color name="smartcart_color_blue">#00BCFF</color>
-    <color name="smartcart_color_darkgray">#2F2F2F</color> <!-- actually, the color from the logo is #0F0F0F, but slightly transparent -->
-    <color name="smartcart_color_darkgray_true">#0F0F0F</color>
+    <color name="toolbar_blue">#105E8D</color>
+    <color name="toolbar_blue_dark">#08344E</color>
 
-    <color name="colorPrimary">@color/smartcart_color_darkgray</color>
-    <color name="colorPrimaryDark">@color/smartcart_color_darkgray_true</color>
-    <color name="colorAccent">@color/smartcart_color_blue</color>
+    <color name="accent_green">#39A24E</color>
+
+    <color name="colorPrimary">@color/toolbar_blue</color>
+    <color name="colorPrimaryDark">@color/toolbar_blue_dark</color>
+    <color name="colorAccent">@color/accent_green</color>
+
+
+    <!--
+    <color name="smartcart_color_blue">#00BCFF</color>
+    <color name="smartcart_color_darkgray">#2F2F2F</color> <! actually, the color from the logo is #0F0F0F, but slightly transparent -
+    <color name="smartcart_color_darkgray_true">#0F0F0F</color> -->
 
     <color name="black">#000000</color>
     <color name="dark_gray">#1F1F1F</color>

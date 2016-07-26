@@ -33,6 +33,8 @@
 
         </android.support.v7.widget.Toolbar>
 
+        <!--
+
         <LinearLayout
             android:id="@+id/activity_shopping_list_details_tools_linearlayout"
             android:layout_width="match_parent"
@@ -43,7 +45,7 @@
             android:paddingBottom="5dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <!-- TODO change static 50dp value! is this really the right value? -->
+            <!- TODO change static 50dp value! is this really the right value? -
 
             <ImageButton
                 android:id="@+id/activity_shopping_list_details_options_edit"
@@ -72,19 +74,20 @@
                 android:src="@drawable/ic_delete_white_24dp"
                 android:scaleType="center"/>
 
-            <!-- TODO make sure, that the scale type is so that the icons are not resized! -->
+            <- TODO make sure, that the scale type is so that the icons are not resized! -
 
-        </LinearLayout>
+        </LinearLayout> -->
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/activity_shopping_list_details_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_marginRight="@dimen/shopping_list_default_fab_margin"
         android:layout_marginEnd="@dimen/shopping_list_default_fab_margin"
         android:layout_marginBottom="@dimen/shopping_list_default_fab_margin"
+        app:elevation="4dp"
         android:src="@drawable/ic_shopping_cart_white_48dp"
         android:layout_gravity="bottom|end"/>
 

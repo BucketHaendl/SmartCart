@@ -21,4 +21,10 @@
         android:orderInCategory="200"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/default_shoppinglists"
+        android:title="Default Lists"
+        android:orderInCategory="300"
+        app:showAsAction="never" />
+
 </menu>

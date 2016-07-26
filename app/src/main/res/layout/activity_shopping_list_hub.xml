@@ -15,10 +15,9 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <fragment
-        android:id="@+id/activity_shopping_list_hub_overview_fragment"
+    <ListView
+        android:id="@+id/activity_shopping_list_hub_overview_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.buckethaendl.smartcart.activities.shoppinglist.ShoppingListOverviewFragment" />
-
+        android:layout_height="match_parent"/>
+    
 </LinearLayout>

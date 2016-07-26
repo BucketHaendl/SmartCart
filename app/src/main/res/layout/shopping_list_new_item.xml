@@ -29,22 +29,10 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/shopping_list_new_item_add_button"
         android:layout_toEndOf="@+id/shopping_list_new_item_add_button"
-        android:layout_toLeftOf="@+id/shopping_list_new_item_category_imagebutton"
-        android:layout_toStartOf="@+id/shopping_list_new_item_category_imagebutton"
-        android:layout_marginTop="@dimen/shopping_list_item_checkbox_margin"
-        android:inputType="text"
-        android:lines="1"/>
-
-    <ImageButton
-        android:id="@+id/shopping_list_new_item_category_imagebutton"
-        android:layout_width="@dimen/shopping_list_item_category_squaresize"
-        android:layout_height="@dimen/shopping_list_item_category_squaresize"
-        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/shopping_list_item_checkbox_margin"
-        android:src="@android:drawable/sym_call_incoming"
-        android:scaleType="fitXY"
-        android:background="@android:color/transparent"/>
+        android:layout_marginTop="@dimen/shopping_list_item_checkbox_margin"
+        android:inputType="textCapSentences"
+        android:lines="1"/>
 
 </RelativeLayout>
