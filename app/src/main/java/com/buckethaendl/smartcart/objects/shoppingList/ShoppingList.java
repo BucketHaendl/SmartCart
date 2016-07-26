@@ -1,46 +1,28 @@
-package com.buckethaendl.smartcart.objects.shoppingList;
+package com.buckethaendl.smartcart.objects.shoppinglist;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-
+import com.buckethaendl.smartcart.App;
 import com.buckethaendl.smartcart.R;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * An object representing a shopping list for SmartCart
  *
  * Created by Cedric on 18.03.2016.
  */
-public class ShoppingList implements Serializable {
+public class ShoppingList extends ArrayList<ShoppingListItem> implements Serializable {
 
-    public static final long SERIALIZATION_ID = 1L;
-    private static transient Resources resources;
-
-    private ShoppingListState listState; //TODO not implemented by now --> do so + implement in constructors
+    public transient static final long serialVersionUID = 1L;
 
     private String name;
     private Calendar date;
-    private int colorId;
-    private List<ShoppingListItem> items;
-    private List<Reminder> reminders;
-    private List<Contact> sharedContacts;
-
-    public static void setStaticResources(Resources res) {
-
-        ShoppingList.resources = res;
-
-    }
-
-    public static Resources getStaticResources() {
-
-        return ShoppingList.resources;
-
-    }
+    private int iconId; //todo can be changed to icons or something else...
+    private boolean done;
 
     public ShoppingList(String name, Calendar date) {
 
@@ -50,44 +32,34 @@ public class ShoppingList implements Serializable {
 
     public ShoppingList(String name, int hour, int minute) {
 
-        this(name, null, android.R.color.white);
-
+        this(name, null, R.drawable.apple_icon);
         this.setDate(hour, minute);
 
     }
 
-    public ShoppingList(String name, Calendar date, int colorId) {
+    public ShoppingList(String name, Calendar date, int iconId) {
 
-        this(name, date, colorId, new ArrayList<ShoppingListItem>());
-
-    }
-
-    public ShoppingList(String name, Calendar date, int colorId, List<ShoppingListItem> items) {
-
-        this(name, date, colorId, items, new ArrayList<Reminder>(), new ArrayList<Contact>());
+        this(name, date, iconId, null);
 
     }
 
-    public ShoppingList(String name, Calendar date, int colorId, List<ShoppingListItem> items, List<Reminder> reminders, List<Contact> sharedContacts) {
+    public ShoppingList(String name, Calendar date, int iconId, List<ShoppingListItem> items) {
+
+        this(name, date, iconId, items, false);
+
+    }
+
+    public ShoppingList(String name, Calendar date, int iconId, List<ShoppingListItem> items, boolean done) {
+
+        super();
 
         this.name = name;
         this.date = date;
-        this.colorId = colorId;
-        this.items = items;
-        this.reminders = reminders;
-        this.sharedContacts = sharedContacts;
+        this.done = done;
+        this.iconId = iconId;
 
-        this.listState = ShoppingListState.DONE; //TODO remove and program better!! this is just for testing (constant setting)
+        if(items != null) this.addAll(items);
 
-
-    }
-
-    public ShoppingListState getListState() {
-        return listState;
-    }
-
-    public void setListState(ShoppingListState listState) {
-        this.listState = listState;
     }
 
     //Getters & Setters
@@ -104,41 +76,28 @@ public class ShoppingList implements Serializable {
         return date;
     }
 
-    public int getColorId() {
-        return colorId;
-    }
-
-    public void setColorId(int colorId) {
-        this.colorId = colorId;
-    }
-
     /**
-     * @return a formated date as it can be used for the shopping_list_overview_listitem_date_textview
+     * Gets the date of the list in a readable form of one of the following:
+     * > today
+     * > yesterday
+     * > XX.YY.
+     * > XX.YY.ZZZZ
+     * Can be used for the shopping_list_overview_listitem_date_textview
+     * @return a formatted string showing date information
      */
     public String getDateFormatted() {
-
-        if(resources == null) throw new NotInitializedException("The static resources object of the ShoppingList.class was never set!");
 
         Calendar current = Calendar.getInstance();
 
         if(current.get(Calendar.DAY_OF_YEAR) == this.date.get(Calendar.DAY_OF_YEAR)) { //when created on the same day (today)
 
-            return resources.getString(R.string.shopping_list_overview_listitem_date_today);
+            return App.getGlobalResources().getString(R.string.shopping_list_overview_listitem_date_today);
 
         }
 
         else if((current.get(Calendar.DAY_OF_YEAR) - this.date.get(Calendar.DAY_OF_YEAR)) == 1) { //when created one day back (yesterday)
 
-            return resources.getString(R.string.shopping_list_overview_listitem_date_yesterday);
-
-        }
-
-        else if(current.get(Calendar.YEAR) == this.date.get(Calendar.YEAR)){
-
-            int dayOfMonth = this.date.get(Calendar.DAY_OF_MONTH);
-            int month = this.date.get(Calendar.MONTH);
-
-            return String.format("%2d.%2d.", dayOfMonth, month); //TODO Watch out! Ist im amerikanischen raum nicht MM/DD/YYYY statt DD/MM/YYYY üblich?!
+            return App.getGlobalResources().getString(R.string.shopping_list_overview_listitem_date_yesterday);
 
         }
 
@@ -148,7 +107,9 @@ public class ShoppingList implements Serializable {
             int month = this.date.get(Calendar.MONTH);
             int year = this.date.get(Calendar.YEAR);
 
-            return String.format("%2d.%2d.%2d", dayOfMonth, month, year); //TODO Watch out! Ist im amerikanischen raum nicht MM/DD/YYYY statt DD/MM/YYYY üblich?! Dann braucht man einen Format String je nach locale!
+            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yy", Locale.GERMANY); //todo set locale depending on location (US, ...)
+
+            return format.format(current.getTime());
 
         }
 
@@ -167,8 +128,24 @@ public class ShoppingList implements Serializable {
 
     }
 
-    //ShoppingListItems
+    public boolean isDone() {
+        return this.done;
+    }
 
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
+    }
+
+    //ShoppingListItems
+    /* todo was removed bc. this is now the list ITSELF (this object)
     public ShoppingListItem getItem(int index) {
 
         if(this.items.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have item entry " + index);
@@ -209,10 +186,10 @@ public class ShoppingList implements Serializable {
 
         return this.items.size();
 
-    }
+    }*/
 
     //Reminders
-
+    /*
     public Reminder getReminder(int index) {
 
         if(this.reminders.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have reminder entry " + index);
@@ -247,10 +224,10 @@ public class ShoppingList implements Serializable {
 
         return this.reminders;
 
-    }
+    }*/
 
     //SharedContacts
-
+    /*
     public Contact getSharedContact(int index) {
 
         if(this.sharedContacts.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have sharedContact entry " + index);
@@ -285,33 +262,12 @@ public class ShoppingList implements Serializable {
 
         return this.sharedContacts;
 
-    }
+    }*/
 
     @Override
     public String toString() {
 
-        return String.format("[List Info] Name: %s, Date: %s, Color: %d, Items: %s, Reminders: %s, SharedContacts: %s", name, getDateFormatted(), this.colorId, items.toString(), reminders.toString(), sharedContacts.toString());
-
-    }
-
-    /**
-     * The type of the shopping list
-     * Mainly determines the shown icon of the list and other functions
-     */
-    public enum ShoppingListState {
-
-        DEFAULT,
-        URGENT,
-        SHARED,
-        DONE;
-
-        //TODO implement
-
-        public int getIconResourceId() {
-
-            return android.R.color.transparent; //TODO change to real symbol
-
-        }
+        return String.format(Locale.GERMANY, "[List Info] Name: %s, Date: %s, Color: %d, Items: %s", name, getDateFormatted(), this.iconId, this.toArray().toString());
 
     }
 

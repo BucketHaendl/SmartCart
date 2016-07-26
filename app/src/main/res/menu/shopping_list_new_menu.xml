@@ -1,0 +1,12 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/shopping_list_new_delete_menuitem"
+        android:title="@string/delete"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
+
+</menu>

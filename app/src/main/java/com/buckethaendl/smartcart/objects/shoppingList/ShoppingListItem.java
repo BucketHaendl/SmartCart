@@ -1,43 +1,53 @@
-package com.buckethaendl.smartcart.objects.shoppingList;
+package com.buckethaendl.smartcart.objects.shoppinglist;
 
 import java.io.Serializable;
 
 /**
- * An object representing a single item from a shoppinglist.
- * The private field checked determines if the item was already bought and is thus ticked in the shopping list
+ * An object representing a single item from a shopping list of SmartCart.
+ * The private field checked determines if the item was already bought and is thus ticked in the shopping list.
  *
  * Created by Cedric on 18.03.2016.
  */
 public class ShoppingListItem implements Serializable {
 
-    public static final long SERIALIZATION_ID = 0L;
+    public transient static final long serialVersionUID = 1L;
 
     private String name;
-    private Material material;
     private boolean checked;
+    private boolean unknown; //if the item is not known
 
     /**
      * Create a new item for a shopping list
      * @param name of the item (e.g. bread)
-     * @param material of the item (e.g. Material.BAKED_GOODS)
      */
-    public ShoppingListItem(String name, Material material) {
+    public ShoppingListItem(String name) {
 
-        this(name, material, false);
+        this(name, false);
 
     }
 
     /**
      * Create a new item for a shopping list
      * @param name of the item (e.g. bread)
-     * @param material of the item (e.g. Material.BAKED_GOODS)
      * @param checked true if the item was already bought and should appear ticked
      */
-    public ShoppingListItem(String name, Material material, boolean checked) {
+    public ShoppingListItem(String name, boolean checked) {
+
+        this(name, checked, false);
+
+    }
+
+    /**
+     * Create a new item for a shopping list
+     * @param name of the item (e.g. bread)
+     * @param checked true if the item was already bought and should appear ticked
+     * @param unknown true if the item should appear as not known
+     */
+    public ShoppingListItem(String name, boolean checked, boolean unknown) {
 
         this.name = name;
-        this.material = material;
         this.checked = checked;
+        this.unknown = unknown;
 
     }
 
@@ -50,14 +60,6 @@ public class ShoppingListItem implements Serializable {
         this.name = name;
     }
 
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
-
     public boolean isChecked() {
         return checked;
     }
@@ -66,11 +68,20 @@ public class ShoppingListItem implements Serializable {
         this.checked = checked;
     }
 
+    public boolean isUnknown() {
+        return unknown;
+    }
+
+    public void setUnknown(boolean unknown) {
+        this.unknown = unknown;
+    }
+
     @Override
     public String toString() {
 
         return this.getName();
 
     }
+
 
 }
