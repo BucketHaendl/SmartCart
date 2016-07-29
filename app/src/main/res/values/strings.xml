@@ -35,6 +35,10 @@
 
     <string name="shopping_list_add_activity_new_list_name">New List</string>
 
+    <!-- activity_in_store -->
+    <string name="in_store_activity_title">Default</string>
+    <string name="in_store_done">Done</string>
+
     <!-- error dialog -->
     <string name="error_dialog_error_title">Error</string>
     <string name="error_dialog_ok">Ok</string>
@@ -53,5 +57,9 @@
     <string name="no">No</string>
     <string name="item_not_recognized">Item %s not known</string>
     <string name="edit">Edit</string>
+    <string name="in_store_leave_dialog_title">Quit Shopping?</string>
+    <string name="in_store_leave_dialog_message">Really quit your current shopping?</string>
+    <string name="in_store_calc_dialog_title">Calculating route...</string>
+    <string name="in_store_calc_dialog_message">Searching %s</string>
 
 </resources>

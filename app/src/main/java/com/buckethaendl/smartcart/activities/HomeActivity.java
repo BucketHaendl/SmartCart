@@ -1,6 +1,5 @@
 package com.buckethaendl.smartcart.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,18 +7,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.buckethaendl.smartcart.App;
 import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.activities.shoppinglist.ShoppingListHubActivity;
-import com.buckethaendl.smartcart.data.local.FileLibrary;
-
-import java.io.File;
+import com.buckethaendl.smartcart.data.local.file.FileLibrary;
 
 public class HomeActivity extends AppCompatActivity {
 
     public static final String TAG = HomeActivity.class.getName();
-
-    public static final String APP_DIRECTORY_NAME = "files";
-    public static File APP_DIRECTORY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +24,8 @@ public class HomeActivity extends AppCompatActivity {
 
         //create basic objects
         Log.d(TAG, "Loading basic objects");
-        APP_DIRECTORY = this.getDir(APP_DIRECTORY_NAME, Context.MODE_PRIVATE);
 
-        FileLibrary fileLibrary = new FileLibrary(APP_DIRECTORY);
+        FileLibrary fileLibrary = new FileLibrary(App.EXTERNAL_DIRECTORY);
         fileLibrary.createManagers();
 
         //setup UI

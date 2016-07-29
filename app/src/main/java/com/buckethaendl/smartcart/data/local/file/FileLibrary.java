@@ -1,4 +1,4 @@
-package com.buckethaendl.smartcart.data.local;
+package com.buckethaendl.smartcart.data.local.file;
 
 import java.io.File;
 

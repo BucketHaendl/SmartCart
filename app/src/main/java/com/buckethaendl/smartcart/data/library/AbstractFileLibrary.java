@@ -1,6 +1,6 @@
 package com.buckethaendl.smartcart.data.library;
 
-import com.buckethaendl.smartcart.data.local.FileInteractable;
+import com.buckethaendl.smartcart.data.local.file.FileInteractable;
 
 import java.util.ArrayList;
 

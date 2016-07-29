@@ -10,22 +10,37 @@
         android:label="@string/application_name"
         android:supportsRtl="true"
         android:theme="@style/SmartCartMaterialCompatTheme">
-        <activity android:name=".activities.HomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
+        <activity android:name=".activities.HomeActivity">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
+
         <activity
             android:name=".activities.shoppinglist.ShoppingListHubActivity"
             android:parentActivityName=".activities.HomeActivity" />
+
         <activity
             android:name=".activities.shoppinglist.ShoppingListDetailsActivity"
             android:parentActivityName=".activities.shoppinglist.ShoppingListHubActivity" />
+
         <activity
             android:name=".activities.shoppinglist.ShoppingListNewActivity"
             android:parentActivityName=".activities.shoppinglist.ShoppingListHubActivity" />
+
+        <activity
+            android:name=".activities.choosestore.ChooseStoreActivity"/>
+
+        <activity
+            android:name=".activities.instore.InStoreActivity"
+            android:parentActivityName=".activities.shoppinglist.ShoppingListHubActivity"/>
+
     </application>
 
 </manifest>

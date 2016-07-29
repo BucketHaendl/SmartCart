@@ -31,12 +31,12 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/shopping_list_item_checkbox"
             android:layout_toEndOf="@+id/shopping_list_item_checkbox"
-            android:layout_toLeftOf="@+id/shopping_list_item_error_imagebutton"
-            android:layout_toStartOf="@+id/shopping_list_item_error_imagebutton"
+            android:layout_toLeftOf="@+id/shopping_list_item_icon_imagebutton"
+            android:layout_toStartOf="@+id/shopping_list_item_icon_imagebutton"
             android:layout_marginTop="@dimen/shopping_list_item_checkbox_margin"/>
 
         <ImageButton
-            android:id="@+id/shopping_list_item_error_imagebutton"
+            android:id="@+id/shopping_list_item_icon_imagebutton"
             android:layout_width="@dimen/shopping_list_item_category_squaresize"
             android:layout_height="@dimen/shopping_list_item_category_squaresize"
             android:layout_centerVertical="true"
@@ -44,7 +44,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/shopping_list_item_checkbox_margin"
             android:background="@null"
-            android:src="@android:drawable/stat_notify_error"/>
+            android:scaleType="fitXY"/>
 
     </RelativeLayout>
 

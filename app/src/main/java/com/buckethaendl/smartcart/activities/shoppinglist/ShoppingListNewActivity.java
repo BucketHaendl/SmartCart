@@ -1,7 +1,6 @@
 package com.buckethaendl.smartcart.activities.shoppinglist;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,10 +21,12 @@ import android.widget.Toast;
 import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.activities.shoppinglist.adapters.IconChooseAdapter;
 import com.buckethaendl.smartcart.activities.shoppinglist.adapters.ShoppingListRecyclerViewAdapter;
+import com.buckethaendl.smartcart.activities.shoppinglist.listeners.ShoppingItemClickListener;
 import com.buckethaendl.smartcart.data.library.ShoppingListLibrary;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
 import com.buckethaendl.smartcart.util.DialogBuildingSite;
+import com.buckethaendl.smartcart.util.KeyboardUtil;
 
 import java.util.Calendar;
 
@@ -35,35 +35,6 @@ import java.util.Calendar;
  */
 public class ShoppingListNewActivity extends AppCompatActivity {
 
-    public static final int[] COLORS = {
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            //Ab hier wiederholt es sich (nur zum test)
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-    };
-
     public static final String TAG = "ShoppingListNewAc";
 
     public static final String EXTRA_EDIT_SHOPPING_LIST_ID = "extra_edit_shopping_list_id";
@@ -71,8 +42,8 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
     protected ShoppingList list;
 
-    protected RecyclerView recyclerView;
-    protected ShoppingListRecyclerViewAdapter recyclerAdapter;
+    protected RecyclerView recycler;
+    protected ShoppingListRecyclerViewAdapter adapter;
 
     private IconChooseListener iconChooseListener;
 
@@ -88,7 +59,17 @@ public class ShoppingListNewActivity extends AppCompatActivity {
         //try to load the list from a previous instance
         if(savedInstanceState != null) {
 
-            this.list = (ShoppingList) savedInstanceState.getSerializable(EXTRA_EDIT_BUNDLE);
+            //Get information about the selected shopping list
+            try {
+
+                int id = savedInstanceState.getInt(EXTRA_EDIT_SHOPPING_LIST_ID);
+                this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
+
+            }
+
+            catch (IndexOutOfBoundsException e) {
+                finish(); //no such list, finish activity
+            }
             Log.v(TAG, "Recreated list from instance state");
 
         }
@@ -125,7 +106,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
         //Set the color chooser recyclerview and use adapter + onClickListener
         RecyclerView colorChooser = (RecyclerView) this.findViewById(R.id.activity_shopping_list_add_color_chooser);
 
-        IconChooseAdapter iconChooseAdapter = new IconChooseAdapter(COLORS);
+        IconChooseAdapter iconChooseAdapter = new IconChooseAdapter();
         colorChooser.setAdapter(iconChooseAdapter);
 
         LinearLayoutManager colorLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -135,21 +116,28 @@ public class ShoppingListNewActivity extends AppCompatActivity {
         iconChooseAdapter.setListener(this.iconChooseListener);
 
         //Set the recycler view and listener
-        this.recyclerView = (RecyclerView) this.findViewById(R.id.activity_shopping_list_add_content_recyclerview);
+        this.recycler = (RecyclerView) this.findViewById(R.id.activity_shopping_list_add_content_recyclerview);
 
         LinearLayoutManager manager = new LinearLayoutManager(this);
-        this.recyclerView.setLayoutManager(manager);
+        this.recycler.setLayoutManager(manager);
 
-        //set the recyclerAdapter
-        this.recyclerAdapter = new ShoppingListRecyclerViewAdapter(this.list);
-        this.recyclerView.setAdapter(this.recyclerAdapter);
+        //set the adapter
+        this.adapter = new ShoppingListRecyclerViewAdapter(this.list);
+        this.recycler.setAdapter(this.adapter);
 
-        //this.recyclerAdapter.setShoppingItemClickListener(new ShoppingClickListener()); can be reimplemented if i would need it again
-        //this.recyclerAdapter.setShoppingItemCheckedListener(new ShoppingCheckedListener());
-        //TODO implement the onClick listener for the individual items
-        //TODO idea for this: the clicked item should expand to a view with an edittext (to set the name) and a category chooser...or the categories are in a swipable recycler view just below that
+        this.adapter.setShoppingItemClickListener(new ShoppingItemClickListener() {
 
-        //todo AB HIER GEHtS WEItERT NACH UntEN DANN11!
+            @Override
+            public void onClickShoppingItem(ShoppingListItem item, int position) {
+
+                //hide keyboard if clicked outside the add new item section
+                KeyboardUtil.hideKeyboard(ShoppingListNewActivity.this);
+
+                Log.v(TAG, "Closed keyboard now");
+
+            }
+
+        });
 
         //Set the add item logic
         this.addItemView = this.findViewById(R.id.activity_shopping_list_add_new_item_include);
@@ -179,7 +167,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
                 }
 
-                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if(keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
 
                     addNewItem(addItemText.getText().toString());
                     return true;
@@ -197,9 +185,6 @@ public class ShoppingListNewActivity extends AppCompatActivity {
         this.setSupportActionBar(toolbar);
 
         if(this.getSupportActionBar() != null) this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.toggleSoftInput (InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
 
     }
@@ -263,7 +248,15 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(EXTRA_EDIT_BUNDLE, this.list);
+        outState.putInt(EXTRA_EDIT_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(this.list));
+
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+        KeyboardUtil.hideKeyboard(this);
 
     }
 
@@ -283,7 +276,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
             ShoppingListItem item = new ShoppingListItem(name, false);
             this.list.add(item);
 
-            this.recyclerAdapter.notifyDataSetChanged();
+            this.adapter.notifyDataSetChanged();
 
             resetNewItem();
 

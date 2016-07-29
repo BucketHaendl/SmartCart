@@ -3,6 +3,7 @@ package com.buckethaendl.smartcart.activities.shoppinglist.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +24,10 @@ import com.buckethaendl.smartcart.util.DialogBuildingSite;
  */
 public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListRecyclerViewAdapter.ShoppingItemViewHolder> {
 
-    private ShoppingList list;
+    protected ShoppingList list;
 
-    private ShoppingItemClickListener shoppingItemClickListener;
-    private ShoppingItemCheckListener shoppingItemCheckListener;
+    protected ShoppingItemClickListener shoppingItemClickListener;
+    protected ShoppingItemCheckListener shoppingItemCheckListener;
 
     public ShoppingListRecyclerViewAdapter(ShoppingList list) {
 
@@ -54,7 +55,7 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
         //Set the data of this shopping list item to the views in the holder
         View rootView = holder.getView();
 
-        //Set up content listener todo remove long - just for deletion now!
+        //Set up content listener
         rootView.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -63,13 +64,23 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
                 ShoppingListRecyclerViewAdapter.this.list.remove(item);
                 ShoppingListRecyclerViewAdapter.this.notifyDataSetChanged();
 
+                return true;
+
+            }
+
+        });
+
+        //Set up content listener todo remove long - just for deletion now!
+        rootView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
                 if(getShoppingItemClickListener() != null) {
 
                     getShoppingItemClickListener().onClickShoppingItem(item, holder.getAdapterPosition());
 
                 }
-
-                return true;
 
             }
 
@@ -96,11 +107,17 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
         });
 
         TextView textView = holder.getTextView();
-        textView.setText(item.getName());
+        textView.setText(item.getDisplayName());
 
         final ImageButton error = holder.getImageButton();
 
-        if(item.isUnknown()) error.setVisibility(View.VISIBLE);
+        if(item.isUnknown()) {
+
+            error.setVisibility(View.VISIBLE);
+            error.setImageDrawable(ContextCompat.getDrawable(context, android.R.drawable.stat_notify_error));
+
+        }
+
         else error.setVisibility(View.INVISIBLE);
 
         //Set up error checker
@@ -110,7 +127,7 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
             public void onClick(View view) {
 
                 //show error dialog
-                final AlertDialog errorDialog = DialogBuildingSite.buildErrorDialog(context, context.getString(R.string.item_not_recognized, item.getName()));
+                final AlertDialog errorDialog = DialogBuildingSite.buildErrorDialog(context, context.getString(R.string.item_not_recognized, item.getDisplayName()));
                 errorDialog.setCancelable(true);
 
                 //ok button
@@ -180,7 +197,7 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
 
             this.checkBox = (CheckBox) view.findViewById(R.id.shopping_list_item_checkbox);
             this.textView = (TextView) view.findViewById(R.id.shopping_list_item_textview);
-            this.imageButton = (ImageButton) view.findViewById(R.id.shopping_list_item_error_imagebutton);
+            this.imageButton = (ImageButton) view.findViewById(R.id.shopping_list_item_icon_imagebutton);
 
         }
 

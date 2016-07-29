@@ -1,4 +1,4 @@
-package com.buckethaendl.smartcart.data.local;
+package com.buckethaendl.smartcart.data.local.file;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -44,17 +44,17 @@ import java.io.Serializable;
     }
 
     @Override
-    public <E extends Serializable> void loadLibrary(Context context) {
+    public synchronized <E extends Serializable> void loadLibrary(Context context) {
         this.loadLibrary(context, null);
     }
 
     @Override
-    public <E extends Serializable> void saveLibrary(Context context, E content) {
+    public synchronized <E extends Serializable> void saveLibrary(Context context, E content) {
         this.saveLibrary(context, content, null);
     }
 
     @Override
-    public synchronized <E extends Serializable> void loadLibrary(Context context, LibraryListener<E> listener) {
+    public synchronized <E extends Serializable> void loadLibrary(Context context, FileLibraryListener<E> listener) {
 
         LoadShoppingListsAsyncTask<E> task = new LoadShoppingListsAsyncTask<E>(context, listener);
         task.execute();
@@ -62,7 +62,7 @@ import java.io.Serializable;
     }
 
     @Override
-    public synchronized <E extends Serializable> void saveLibrary(Context context, E content, LibraryListener<E> listener) {
+    public synchronized <E extends Serializable> void saveLibrary(Context context, E content, FileLibraryListener<E> listener) {
 
         SaveShoppingListsAsyncTask<E> task = new SaveShoppingListsAsyncTask<E>(context, content, listener);
         task.execute();
@@ -73,7 +73,7 @@ import java.io.Serializable;
 
         private Context context;
         private Handler uiHandler;
-        private LibraryListener<E> listener;
+        private FileLibraryListener<E> listener;
 
         public LoadShoppingListsAsyncTask(Context context) {
 
@@ -81,7 +81,7 @@ import java.io.Serializable;
 
         }
 
-        public LoadShoppingListsAsyncTask(Context context, LibraryListener<E> listener) {
+        public LoadShoppingListsAsyncTask(Context context, FileLibraryListener<E> listener) {
 
             this.context = context;
             this.listener = listener;
@@ -342,7 +342,7 @@ import java.io.Serializable;
         private Context context;
         private Handler uiHandler;
         private E content;
-        private LibraryListener<E> listener;
+        private FileLibraryListener<E> listener;
 
         public SaveShoppingListsAsyncTask(Context context, E content) {
 
@@ -351,7 +351,7 @@ import java.io.Serializable;
 
         }
 
-        public SaveShoppingListsAsyncTask(Context context, E content, LibraryListener<E> listener) {
+        public SaveShoppingListsAsyncTask(Context context, E content, FileLibraryListener<E> listener) {
 
             this.context = context;
             this.content = content;

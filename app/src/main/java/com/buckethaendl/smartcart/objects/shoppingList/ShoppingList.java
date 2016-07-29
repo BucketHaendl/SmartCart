@@ -1,12 +1,21 @@
 package com.buckethaendl.smartcart.objects.shoppinglist;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import com.buckethaendl.smartcart.App;
 import com.buckethaendl.smartcart.R;
+import com.buckethaendl.smartcart.data.local.sqlite.SQLiteShelfConnector;
+import com.buckethaendl.smartcart.data.service.WaSaConnector;
+import com.buckethaendl.smartcart.data.service.WaSaFBBShelf;
+import com.buckethaendl.smartcart.objects.instore.Shelf;
+import com.buckethaendl.smartcart.util.Importancer;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -17,22 +26,23 @@ import java.util.Locale;
  */
 public class ShoppingList extends ArrayList<ShoppingListItem> implements Serializable {
 
+    public transient static final String TAG = ShoppingList.class.getName();
     public transient static final long serialVersionUID = 1L;
 
     private String name;
     private Calendar date;
-    private int iconId; //todo can be changed to icons or something else...
+    private int iconId;
     private boolean done;
 
     public ShoppingList(String name, Calendar date) {
 
-        this(name, date, android.R.color.white);
+        this(name, date, Icons.getRandomIcon());
 
     }
 
     public ShoppingList(String name, int hour, int minute) {
 
-        this(name, null, R.drawable.apple_icon);
+        this(name, null, Icons.getRandomIcon());
         this.setDate(hour, minute);
 
     }
@@ -144,125 +154,118 @@ public class ShoppingList extends ArrayList<ShoppingListItem> implements Seriali
         this.iconId = iconId;
     }
 
-    //ShoppingListItems
-    /* todo was removed bc. this is now the list ITSELF (this object)
-    public ShoppingListItem getItem(int index) {
+    /**
+     * Returns whether this shopping list is currently fully sorted or not
+     * @return true if all entries sorted, false if not
+     */
+    public boolean isSorted() {
 
-        if(this.items.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have item entry " + index);
+        for(ShoppingListItem item : this) {
 
-        else return this.items.get(index);
+            //if at least one item is not a sorted one
+            if(!(item instanceof SortedShoppingListItem)) return false;
 
-    }
+        }
 
-    public void addItem(ShoppingListItem item) {
-
-        this.items.add(item);
-
-    }
-
-    public boolean removeItem(int index) {
-
-        if(this.items.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have item entry " + index);
-
-        else return (this.items.remove(index) != null);
+        return true;
 
     }
 
-    public boolean removeItem(ShoppingListItem item) {
+    /**
+     * Sorts the shopping list according to the perfect shelf sequence in the given market number
+     * NOTE that this action requires internet and can have a quite heavy workload!
+     * todo maybe only one central background task to do everything in (just one Thread with Listener, etc.) and no multi-threading in itself
+     */
+    public void sortList(final String country, final int market, final SortingListListener listener) {
 
-        if(!this.items.contains(item)) throw new IllegalArgumentException("The item " + item + " isn't contained in " + this.getName());
+        Log.v(TAG, "Starting sorting list " + this.getName() + " for country " + country + " in market " + market);
 
-        else return this.items.remove(item);
+        final List<SortedShoppingListItem> sortedItems = new ArrayList<SortedShoppingListItem>();
+        final SQLiteShelfConnector connector = SQLiteShelfConnector.getInstance();
+
+        AsyncTask<Void, ShoppingListItem, Boolean> sortTask = new AsyncTask<Void, ShoppingListItem, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+
+                for (ShoppingListItem item : ShoppingList.this) {
+
+                    Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Start sorting");
+                    this.publishProgress(item);
+
+                    //for every item, the corresponding shelves are loaded
+                    List<WaSaFBBShelf> fbbShelves = WaSaConnector.getInstance().loadShelvesSync(country, market, item.getFormatedName());
+
+                    final List<Shelf> realShelves = new ArrayList<Shelf>(); //maps found shelves to occurrances
+                    for (WaSaFBBShelf fbbShelf : fbbShelves) {
+
+                        Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Found FBB " + fbbShelf.getFbbNr());
+                        realShelves.add(connector.loadShelfSync(fbbShelf));
+
+                    }
+
+                    Shelf shelf = Importancer.findMostImportant(realShelves);
+
+                    Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Most important shelf: " + shelf.getShelfId() + " (priority: " + shelf.getPriority() + ")");
+
+                    SortedShoppingListItem sortedItem = new SortedShoppingListItem(item, shelf);
+                    sortedItems.add(sortedItem);
+
+                }
+
+                if(sortedItems.size() >= ShoppingList.this.size()) {
+
+                    //after all were sorted in
+                    Log.v(TAG, "BEFORE: " + ShoppingList.super.toString());
+
+                    Collections.sort(sortedItems);
+
+                    Log.v(TAG, "MIDDLE: " + sortedItems.toString());
+
+                    //reset all values to the sorted form and with
+                    ShoppingList.this.clear();
+                    ShoppingList.this.addAll(sortedItems);
+
+                    Log.v(TAG, "AFTER: " + ShoppingList.super.toString());
+
+                    Log.v(TAG, "Fully sorted? " + isSorted());
+
+                    return true;
+
+                }
+
+                else {
+
+                    return false;
+
+                }
+
+            }
+
+            @Override
+            protected void onProgressUpdate(ShoppingListItem...items) {
+
+                if(listener != null) listener.updateProgress(sortedItems.size(), items[0]);
+
+            }
+
+            @Override
+            protected void onPostExecute(Boolean sortedAll) {
+
+                if(sortedAll) Log.v(TAG, "Finished sorting list " + getName() + " for country " + country + " in market " + market);
+                else Log.e(TAG, "Could not sort in all items in " + ShoppingList.this.getName());
+
+
+                //inform listener about finished sorting
+                listener.finishedSorting(ShoppingList.this);
+
+            }
+
+        };
+
+        sortTask.execute();
 
     }
-
-    public List<ShoppingListItem> getItems() {
-
-        return this.items;
-
-    }
-
-    public int getItemsCount() {
-
-        return this.items.size();
-
-    }*/
-
-    //Reminders
-    /*
-    public Reminder getReminder(int index) {
-
-        if(this.reminders.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have reminder entry " + index);
-
-        else return this.reminders.get(index);
-
-    }
-
-    public void addReminder(Reminder reminder) {
-
-        this.reminders.add(reminder);
-
-    }
-
-    public boolean removeReminder(int index) {
-
-        if(this.items.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have reminder entry " + index);
-
-        else return (this.reminders.remove(index) != null);
-
-    }
-
-    public boolean removeReminder(Reminder reminder) {
-
-        if(!this.reminders.contains(reminder)) throw new IllegalArgumentException("The reminder " + reminder + " isn't contained in " + this.getName());
-
-        else return this.reminders.remove(reminder);
-
-    }
-
-    public List<Reminder> getReminders() {
-
-        return this.reminders;
-
-    }*/
-
-    //SharedContacts
-    /*
-    public Contact getSharedContact(int index) {
-
-        if(this.sharedContacts.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have sharedContact entry " + index);
-
-        else return this.sharedContacts.get(index);
-
-    }
-
-    public void addSharedContact(Contact sharedContact) {
-
-        this.sharedContacts.add(sharedContact);
-
-    }
-
-    public boolean removeSharedContact(int index) {
-
-        if(this.sharedContacts.get(index) == null) throw new ArrayIndexOutOfBoundsException("The list " + this.getName() + " doesn't have sharedContact entry " + index);
-
-        else return (this.sharedContacts.remove(index) != null);
-
-    }
-
-    public boolean removeSharedContact(Contact sharedContact) {
-
-        if(!this.sharedContacts.contains(sharedContact)) throw new IllegalArgumentException("The sharedContact " + sharedContact + " isn't contained in " + this.getName());
-
-        else return this.sharedContacts.remove(sharedContact);
-
-    }
-
-    public List<Contact> getSharedContacts() {
-
-        return this.sharedContacts;
-
-    }*/
 
     @Override
     public String toString() {
@@ -270,5 +273,120 @@ public class ShoppingList extends ArrayList<ShoppingListItem> implements Seriali
         return String.format(Locale.GERMANY, "[List Info] Name: %s, Date: %s, Color: %d, Items: %s", name, getDateFormatted(), this.iconId, this.toArray().toString());
 
     }
+
+    public interface SortingListListener {
+
+        void updateProgress(int finishedItems, ShoppingListItem currentItem);
+        void finishedSorting(ShoppingList list);
+
+    }
+
+            /*
+        Async Method
+        Formerly used
+        Uses multi-threading, but bit more complicated
+        for(final ShoppingListItem item : this) {
+
+            Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Start sorting");
+
+            //for every item, the corresponding shelves are loaded
+            WaSaConnector.getInstance().loadShelvesAsync(country, market, item.getFormatedName(), new LibraryListener<List<WaSaFBBShelf>>() {
+
+                @Override
+                public void onOperationStarted() {
+
+                }
+
+                @Override
+                public void onLoadResult(final List<WaSaFBBShelf> result) {
+
+                    final List<Shelf> realShelves = new ArrayList<Shelf>(); //maps found shelves to occurrances
+
+                    for(final WaSaFBBShelf fbbShelf : result) {
+
+                        Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Found FBB " + fbbShelf.getFbbNr());
+
+                        //todo kann es hier zu sync problemen kommen? beim reinen auslesen und schreiben?
+                        connector.loadShelfAsync(fbbShelf, new LibraryListener<Shelf>() {
+
+                            @Override
+                            public void onOperationStarted() {
+
+                            }
+
+                            @Override
+                            public void onLoadResult(Shelf result) {
+
+                                realShelves.add(result); //todo was passiert hier, wenn null hinzugefüt wird?
+
+                            }
+
+                            @Override
+                            public void onSetInitialized(boolean initialized) {
+
+                            }
+
+                            @Override
+                            public void onOperationFinished() {
+
+                                //wait for all shelves to be retrieved
+                                if(realShelves.size() >= result.size()) {
+
+                                    //Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "All shelves: " + realShelves.toString());
+                                    Shelf shelf = Importancer.findMostImportant(realShelves);
+
+                                    Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "MOST IMPORTANT SHELF: " + shelf.getShelfId() + " (priority: " + shelf.getPriority() + ")");
+
+                                    SortedShoppingListItem sortedItem = new SortedShoppingListItem(item, shelf);
+                                    sortedItems.add(sortedItem);
+
+                                }
+
+                                //after all were sorted in
+                                if(sortedItems.size() >= ShoppingList.this.size()) {
+
+                                    Log.v(TAG, "BEFORE: " + ShoppingList.super.toString());
+
+                                    Collections.sort(sortedItems);
+
+                                    //reset all values to the sorted form and with
+                                    ShoppingList.this.clear();
+                                    ShoppingList.this.addAll(sortedItems);
+
+                                    Log.v(TAG, "AFTER: " + ShoppingList.super.toString());
+
+                                    Log.v(TAG, "Is sorted? " + isSorted());
+
+                                    //inform listener about finished sorting
+                                    listener.finishedSorting(ShoppingList.this);
+                                    Log.v(TAG, "Finished sorting list " + getName() + " for country " + country + " in market " + market);
+
+                                }
+
+                            }
+
+                        });
+
+
+                    }
+
+
+                }
+
+                @Override
+                public void onSetInitialized(boolean initialized) {
+
+                }
+
+                @Override
+                public void onOperationFinished() {
+
+                }
+
+            });
+
+        }
+
+        Log.v(TAG, "Finished calling all threads...");*/
 
 }

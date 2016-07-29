@@ -3,6 +3,9 @@ package com.buckethaendl.smartcart;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
+
+import java.io.File;
 
 /**
  * This class provides a global access to the application context and resources.
@@ -15,11 +18,18 @@ public class App extends Application {
 
     private static Context globalContext;
 
+    public static final String DIRECTORY_NAME = "smartcart";
+    public static File EXTERNAL_DIRECTORY;
+
     @Override
     public void onCreate() {
 
         super.onCreate();
         App.globalContext = this;
+
+        //EXTERNAL_DIRECTORY = this.getDir(APP_DIRECTORY_NAME, Context.MODE_PRIVATE);
+        EXTERNAL_DIRECTORY = this.getDir(DIRECTORY_NAME, MODE_PRIVATE); //TODO or use this.getDir(mode public)
+        Log.e("App", "File directory: " + EXTERNAL_DIRECTORY);
 
     }
 

@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.buckethaendl.smartcart.R;
+import com.buckethaendl.smartcart.objects.shoppinglist.Icons;
 
 /**
  * Created by Cedric on 03.04.2016.
@@ -18,9 +19,9 @@ public class IconChooseAdapter extends RecyclerView.Adapter<IconChooseAdapter.Co
     private IconChooseListener listener;
     private final int[] colors;
 
-    public IconChooseAdapter(int[] colors) {
+    public IconChooseAdapter() {
 
-        this(colors, null);
+        this(Icons.getIcons(), null);
 
     }
 

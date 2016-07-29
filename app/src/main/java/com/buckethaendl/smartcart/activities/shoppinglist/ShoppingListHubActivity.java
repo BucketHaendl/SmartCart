@@ -13,11 +13,12 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.buckethaendl.smartcart.R;
+import com.buckethaendl.smartcart.activities.Refreshable;
 import com.buckethaendl.smartcart.activities.shoppinglist.adapters.ShoppingListAdapter;
 import com.buckethaendl.smartcart.data.library.LibraryRefreshListener;
 import com.buckethaendl.smartcart.data.library.ShoppingListLibrary;
 
-public class ShoppingListHubActivity extends AppCompatActivity {
+public class ShoppingListHubActivity extends AppCompatActivity implements Refreshable {
 
     public static final String TAG = ShoppingListHubActivity.class.getName();
 
@@ -63,7 +64,7 @@ public class ShoppingListHubActivity extends AppCompatActivity {
         //Load the library with values from the local serialization file NOTE: this must be after getting references to the fragments!
         //note was in onStart before - any problems?
         if(!library.isInitialized()) library.loadLibrary(this);
-        else this.refreshList(true);
+        else this.refreshView(true);
 
     }
 
@@ -125,26 +126,17 @@ public class ShoppingListHubActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Updates the adapter to notify it, that the data set has changed and shopping lists were added or removed from the Library
-     * This method doesn't reload the shopping lists from the local binary file, but only shows the ones currently known by the Library.
-     * Call loadLocalShoppingLists() to deserialize the locally saved lists first
-     */
-    public void refreshList() {
+    @Override
+    public void refreshView() {
 
-        this.refreshList(false);
+        this.refreshView(false);
 
     }
 
-    /**
-     * Updates the adapter to notify it, that the data set has changed and shopping lists were added or removed from the Library
-     * This method doesn't reload the shopping lists from the local binary file, but only shows the ones currently known by the Library.
-     * Call loadLocalShoppingLists() to deserialize the locally saved lists first
-     * @param forceRecreate Set to true if you want to force the ArrayAdapter to regenerate, no matter if it pre-existed
-     */
-    public void refreshList(boolean forceRecreate) {
+    @Override
+    public void refreshView(boolean forceCreate) {
 
-        if(ShoppingListHubActivity.this.adapter == null || forceRecreate) {
+        if(ShoppingListHubActivity.this.adapter == null || forceCreate) {
 
             ShoppingListHubActivity.this.adapter = new ShoppingListAdapter(ShoppingListHubActivity.this, R.layout.shopping_list_overview_listitem);
             ShoppingListHubActivity.this.listView.setAdapter(adapter);
@@ -152,6 +144,8 @@ public class ShoppingListHubActivity extends AppCompatActivity {
         }
 
         else ShoppingListHubActivity.this.adapter.notifyDataSetChanged();
+
+        Log.v(TAG, "Refreshed activity");
 
     }
 
@@ -173,8 +167,7 @@ public class ShoppingListHubActivity extends AppCompatActivity {
         @Override
         public void onRefresh() {
 
-            ShoppingListHubActivity.this.refreshList();
-            Log.v(TAG, "Refreshed shopping list");
+            ShoppingListHubActivity.this.refreshView();
 
         }
 

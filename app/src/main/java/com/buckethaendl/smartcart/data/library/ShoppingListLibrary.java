@@ -3,11 +3,10 @@ package com.buckethaendl.smartcart.data.library;
 import android.content.Context;
 import android.util.Log;
 
-import com.buckethaendl.smartcart.App;
 import com.buckethaendl.smartcart.R;
-import com.buckethaendl.smartcart.data.local.FileInteractable;
-import com.buckethaendl.smartcart.data.local.FileLibrary;
-import com.buckethaendl.smartcart.data.local.LibraryListener;
+import com.buckethaendl.smartcart.data.local.file.FileInteractable;
+import com.buckethaendl.smartcart.data.local.file.FileLibrary;
+import com.buckethaendl.smartcart.data.local.file.FileLibraryListener;
 import com.buckethaendl.smartcart.objects.exceptions.NotInitializedException;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
@@ -106,17 +105,6 @@ public class ShoppingListLibrary implements ListenerLibrary {
 
     }
 
-    /**
-     * Instantiates a new, empty shopping list object
-     * @return the newly created list
-     */
-    public ShoppingList createNewList() { //TODO this is the only method able to create new lists for the AddActivity
-
-        String newListName = App.getGlobalResources().getString(R.string.shopping_list_add_activity_new_list_name);
-        return new ShoppingList(newListName, Calendar.getInstance());
-
-    }
-
     public void addList(ShoppingList list) {
 
         this.shoppingLists.add(list);
@@ -138,6 +126,12 @@ public class ShoppingListLibrary implements ListenerLibrary {
             this.notifyListeners();
 
         }
+
+    }
+
+    public int indexOf(ShoppingList list) {
+
+        return this.shoppingLists.indexOf(list);
 
     }
 
@@ -195,9 +189,9 @@ public class ShoppingListLibrary implements ListenerLibrary {
     }
 
     @Override
-    public void loadLibrary(Context context, final LibraryRefreshListener listener) {
+    public synchronized void loadLibrary(Context context, final LibraryRefreshListener listener) {
 
-        this.file.loadLibrary(context, new LibraryListener<ArrayList<ShoppingList>>() {
+        this.file.loadLibrary(context, new FileLibraryListener<ArrayList<ShoppingList>>() {
 
             @Override
             public void onOperationStarted() {
@@ -244,9 +238,9 @@ public class ShoppingListLibrary implements ListenerLibrary {
     }
 
     @Override
-    public void saveLibrary(Context context, final LibraryRefreshListener listener) {
+    public synchronized void saveLibrary(Context context, final LibraryRefreshListener listener) {
 
-        this.file.saveLibrary(context, this.shoppingLists, new LibraryListener<ArrayList<ShoppingList>>() {
+        this.file.saveLibrary(context, this.shoppingLists, new FileLibraryListener<ArrayList<ShoppingList>>() {
 
             @Override
             public void onOperationStarted() {

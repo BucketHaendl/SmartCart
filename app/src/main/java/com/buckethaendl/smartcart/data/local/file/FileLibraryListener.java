@@ -1,9 +1,11 @@
-package com.buckethaendl.smartcart.data.local;
+package com.buckethaendl.smartcart.data.local.file;
+
+import java.io.Serializable;
 
 /**
- * Created by Cedric on 27.07.16.
+ * Created by Cedric on 20.07.16.
  */
-public interface LibraryListener<E> {
+public interface FileLibraryListener<E extends Serializable> {
 
     void onOperationStarted();
     void onOperationFinished();

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- todo replace with finish flag -->
+
+    <item
+        android:id="@+id/in_store_done_menuitem"
+        android:title="@string/in_store_done"
+        android:icon="@drawable/ic_shopping_cart_white_24dp"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
+
+</menu>

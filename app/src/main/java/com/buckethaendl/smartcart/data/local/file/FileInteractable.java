@@ -1,4 +1,4 @@
-package com.buckethaendl.smartcart.data.local;
+package com.buckethaendl.smartcart.data.local.file;
 
 import android.content.Context;
 
@@ -12,7 +12,7 @@ public interface FileInteractable {
     <E extends Serializable> void loadLibrary(Context context);
     <E extends Serializable> void saveLibrary(Context context, E content);
 
-    <E extends Serializable> void loadLibrary(Context context, LibraryListener<E> listener);
-    <E extends Serializable> void saveLibrary(Context context, E content, LibraryListener<E> listener);
+    <E extends Serializable> void loadLibrary(Context context, FileLibraryListener<E> listener);
+    <E extends Serializable> void saveLibrary(Context context, E content, FileLibraryListener<E> listener);
 
 }

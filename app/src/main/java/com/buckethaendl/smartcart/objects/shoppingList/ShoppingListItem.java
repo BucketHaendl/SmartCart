@@ -10,54 +10,97 @@ import java.io.Serializable;
  */
 public class ShoppingListItem implements Serializable {
 
+    public static final String TAG = ShoppingListItem.class.getName();
+
+    public transient static final String PRE_REGEX = ",?\\d+[A-Z,a-z]*,?"; //to identify pre-string (200g, 3x)
     public transient static final long serialVersionUID = 1L;
 
-    private String name;
+    private String displayName;
     private boolean checked;
     private boolean unknown; //if the item is not known
 
     /**
      * Create a new item for a shopping list
-     * @param name of the item (e.g. bread)
+     * @param displayName of the item (e.g. bread)
      */
-    public ShoppingListItem(String name) {
+    public ShoppingListItem(String displayName) {
 
-        this(name, false);
+        this(displayName, false);
 
     }
 
     /**
      * Create a new item for a shopping list
-     * @param name of the item (e.g. bread)
+     * @param displayName of the item (e.g. bread)
      * @param checked true if the item was already bought and should appear ticked
      */
-    public ShoppingListItem(String name, boolean checked) {
+    public ShoppingListItem(String displayName, boolean checked) {
 
-        this(name, checked, false);
+        this(displayName, checked, false);
 
     }
 
     /**
      * Create a new item for a shopping list
-     * @param name of the item (e.g. bread)
+     * @param displayName of the item (e.g. bread)
      * @param checked true if the item was already bought and should appear ticked
      * @param unknown true if the item should appear as not known
      */
-    public ShoppingListItem(String name, boolean checked, boolean unknown) {
+    public ShoppingListItem(String displayName, boolean checked, boolean unknown) {
 
-        this.name = name;
+        this.displayName = displayName;
         this.checked = checked;
         this.unknown = unknown;
 
     }
 
     //Getters & Setters
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
+     * Returns a search string, formated in a readable way to insert into WaSa
+     * @return a format string
+     */
+    public String getFormatedName() {
+
+        //Log.v(TAG, "Formating name '" + this.displayName + "'");
+
+        String name = this.displayName;
+        name = name.trim();
+
+        String[] split = name.split(" "); //split on spaces
+        StringBuilder builder = new StringBuilder();
+
+        for(String part : split) {
+
+            part = part.trim();
+
+            if(part.matches(PRE_REGEX)) {
+
+                //Log.v(TAG, "Found PRE_REGEX: '" + part + "'");
+                //ignore
+
+            }
+
+            else {
+
+                //Log.v(TAG, "Found product name: '" + part + "'");
+                builder.append(part);
+                builder.append(" ");
+
+            }
+
+        }
+
+        String ret = builder.toString().trim();
+        return ret;
+
     }
 
     public boolean isChecked() {
@@ -79,7 +122,7 @@ public class ShoppingListItem implements Serializable {
     @Override
     public String toString() {
 
-        return this.getName();
+        return this.getDisplayName();
 
     }
 
