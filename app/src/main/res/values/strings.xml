@@ -61,5 +61,11 @@
     <string name="in_store_leave_dialog_message">Really quit your current shopping?</string>
     <string name="in_store_calc_dialog_title">Calculating route...</string>
     <string name="in_store_calc_dialog_message">Searching %s</string>
+    <string name="activity_choose_store_activity_title">Choose Market</string>
+    <string name="choose_store_activity_store_name_format">Store ID: %s</string>
+    <string name="choose_store_activity_store_address_format">%1$s\n%2$s %3$s</string>
+    <string name="choose_store_activity_store_distance_format">%.1f km</string>
+    <string name="loading_stores_dialog_title">Loading markets</string>
+    <string name="loading_stores_dialog_message">Please wait</string>
 
 </resources>

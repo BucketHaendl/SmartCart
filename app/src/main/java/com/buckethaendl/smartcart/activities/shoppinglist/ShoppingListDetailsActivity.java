@@ -115,15 +115,6 @@ public class ShoppingListDetailsActivity extends AppCompatActivity implements Re
 
         this.refreshView(true);
 
-        this.adapter.setShoppingItemClickListener(new ShoppingItemClickListener() {
-
-            @Override
-            public void onClickShoppingItem(ShoppingListItem item, int position) {
-                Log.v(TAG, "Result: '" + item.getFormatedName() + "'");
-            }
-
-        });
-
     }
 
     @Override
@@ -223,6 +214,15 @@ public class ShoppingListDetailsActivity extends AppCompatActivity implements Re
         if(this.adapter == null || forceCreate) {
 
             this.adapter = new ShoppingListRecyclerViewAdapter(this.list);
+            this.adapter.setShoppingItemClickListener(new ShoppingItemClickListener() {
+
+                @Override
+                public void onClickShoppingItem(ShoppingListItem item, int position) {
+                    Log.v(TAG, "Result: '" + item.getFormatedName() + "'");
+                }
+
+            });
+
             this.recycler.setAdapter(this.adapter);
 
         }

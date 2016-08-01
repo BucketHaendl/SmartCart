@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.buckethaendl.smartcart.App;
 import com.buckethaendl.smartcart.data.local.LibraryListener;
+import com.buckethaendl.smartcart.util.ConnectionUtil;
+import com.buckethaendl.smartcart.util.JsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * todo noch in AsyncTask und gescheit handlen
@@ -103,16 +102,16 @@ public class WaSaConnector {
         protected void onPreExecute() {
 
             this.uiHandler = new Handler(Looper.getMainLooper());
-            if(this.listener != null) this.listener.onOperationStarted();
+            if (this.listener != null) this.listener.onOperationStarted();
 
         }
 
         @Override
-        protected List<WaSaFBBShelf> doInBackground(Void...voids) {
+        protected List<WaSaFBBShelf> doInBackground(Void... voids) {
 
             List<WaSaFBBShelf> resultShelf = this.queryShelves(country, market, query);
 
-            if(this.listener != null) this.listener.onLoadResult(resultShelf);
+            if (this.listener != null) this.listener.onLoadResult(resultShelf);
             return resultShelf;
 
         }
@@ -120,7 +119,7 @@ public class WaSaConnector {
         @Override
         protected void onPostExecute(List<WaSaFBBShelf> loadedShelf) {
 
-            if(this.listener != null) {
+            if (this.listener != null) {
 
                 this.listener.onOperationFinished();
 
@@ -130,14 +129,15 @@ public class WaSaConnector {
 
         /**
          * Queries the given data and gives back all shelves, that contain the given product and market details
+         *
          * @param country 2 letter ISO code of the country to search in ("DE")
-         * @param market 4 digit market number of the market to search in (6250)
-         * @param query a search query term of the product to search the shelves for ("honey")
+         * @param market  4 digit market number of the market to search in (6250)
+         * @param query   a search query term of the product to search the shelves for ("honey")
          * @return all shelves that contain products with the ware description query term in this specific store (here: all honey shelves)
          */
-        public List<WaSaFBBShelf> queryShelves(String country, int market, String query){
+        public List<WaSaFBBShelf> queryShelves(String country, int market, String query) {
 
-            this.prepareUntrustedCertificateHackaround();
+            ConnectionUtil.prepareUntrustedCertificateHackaround();
 
             String queryUrl = WASA_REST_URL
                     .replace(COUNTRY_PH, country)
@@ -152,9 +152,9 @@ public class WaSaConnector {
                 String rawResult = readResultString(connection);
                 return parseJsonShelves(rawResult);
 
-            } catch (MalformedURLException me){
+            } catch (MalformedURLException me) {
 
-                Log.e(TAG, "Broken URL: "+ queryUrl);
+                Log.e(TAG, "Broken URL: " + queryUrl);
 
             } catch (IOException e) {
 
@@ -168,12 +168,13 @@ public class WaSaConnector {
 
         /**
          * Reads out the result string containing the JSON from the given connection
+         *
          * @param connection The connection to the JSON
          * @return A string containing the resulting JSON
          */
-        private String readResultString(HttpsURLConnection connection){
+        private String readResultString(HttpsURLConnection connection) {
 
-            if(USE_LOCAL_FILE){ //todo remove
+            if (USE_LOCAL_FILE) { //todo remove
 
                 File testFile = new File(App.EXTERNAL_DIRECTORY, "smartcart.json");
 
@@ -185,21 +186,17 @@ public class WaSaConnector {
                     String line = "";
                     StringBuilder json = new StringBuilder();
 
-                    while((line = bReader.readLine()) !=null) {
+                    while ((line = bReader.readLine()) != null) {
                         json.append(line);
                     }
 
                     return json.toString();
 
-                }
-
-                catch (FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
 
                     e.printStackTrace();
 
-                }
-
-                catch (IOException e) {
+                } catch (IOException e) {
 
                     e.printStackTrace();
 
@@ -209,29 +206,8 @@ public class WaSaConnector {
 
             else {
 
-                if(connection != null){
-
-                    try {
-
-                        InputStreamReader streamReader = new InputStreamReader(connection.getInputStream());
-                        BufferedReader bufferedReader = new BufferedReader(streamReader);
-
-                        String json = "";
-                        String line;
-
-                        while((line = bufferedReader.readLine())!=null){
-                            json += line;
-                        }
-
-                        return json;
-
-                    }
-
-                    catch (IOException e){
-                        Log.e(TAG, "No Answer from URL: " + connection.getURL().toString());
-                    }
-
-                }
+                //reads the JSON String from the connection
+                return JsonUtil.getJsonContent(connection);
 
             }
 
@@ -242,6 +218,7 @@ public class WaSaConnector {
 
         /**
          * Parses the given JSON to a list of WaSaFBBShelf objects
+         *
          * @param json the JSON to be parsed
          * @return a list of shelves contained in the JSON
          */
@@ -249,41 +226,13 @@ public class WaSaConnector {
 
             //Create the JSON
             Gson gson = new Gson();
-            Type listType = new TypeToken<ArrayList<WaSaFBBShelf>>(){}.getType();
+            Type listType = new TypeToken<ArrayList<WaSaFBBShelf>>() {
+            }.getType();
 
             //Create List<WaSaFBBShelf> from the JSON
             List<WaSaFBBShelf> regale = gson.fromJson(json, listType);
 
             return regale;
-
-        }
-
-        /**
-         * A workaround for the missing SSL connection certificate
-         */
-        private void prepareUntrustedCertificateHackaround(){
-
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-                        public void checkClientTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                        public void checkServerTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                    }
-            };
-
-            try {
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            } catch (Exception e) {
-                Log.e(TAG, "SSQ-Hackaround failed");
-            }
 
         }
 

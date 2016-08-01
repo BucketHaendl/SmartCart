@@ -4,7 +4,8 @@
     android:id="@+id/shopping_list_item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?android:attr/selectableItemBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"
