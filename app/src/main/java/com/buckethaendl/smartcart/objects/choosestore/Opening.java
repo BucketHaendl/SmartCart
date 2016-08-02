@@ -1,6 +1,8 @@
 package com.buckethaendl.smartcart.objects.choosestore;
 
-public class Opening {
+import java.io.Serializable;
+
+public class Opening implements Serializable {
 
     private String weekday;
     private Integer close;

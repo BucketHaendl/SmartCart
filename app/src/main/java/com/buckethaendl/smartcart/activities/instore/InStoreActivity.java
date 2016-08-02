@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,12 +18,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.buckethaendl.smartcart.R;
-import com.buckethaendl.smartcart.activities.HomeActivity;
 import com.buckethaendl.smartcart.activities.Refreshable;
-import com.buckethaendl.smartcart.activities.shoppinglist.adapters.InStoreRecyclerViewAdapter;
+import com.buckethaendl.smartcart.activities.instore.adapters.InStoreRecyclerViewAdapter;
+import com.buckethaendl.smartcart.activities.instore.listeners.RouteClickListener;
+import com.buckethaendl.smartcart.activities.shoppinglist.ShoppingListHubActivity;
 import com.buckethaendl.smartcart.data.library.ShoppingListLibrary;
+import com.buckethaendl.smartcart.objects.instore.Material;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
+import com.buckethaendl.smartcart.objects.shoppinglist.SortedShoppingListItem;
 
 public class InStoreActivity extends AppCompatActivity implements Refreshable {
 
@@ -31,10 +35,15 @@ public class InStoreActivity extends AppCompatActivity implements Refreshable {
     public static final String EXTRA_SHOPPING_LIST_ID = "extra_shopping_list_id";
     public static final String LEAVE_SHOPPING_CONFIRM_TAG = "leave_shopping_confirm_tag";
 
+    private View mainView;
+
     protected ShoppingList list;
 
     protected RecyclerView recycler;
     protected InStoreRecyclerViewAdapter adapter;
+
+    private SortedShoppingListItem lastClickedItem;
+    private Material lastClickedMaterial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,38 +51,26 @@ public class InStoreActivity extends AppCompatActivity implements Refreshable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_store);
 
+        this.mainView = findViewById(R.id.activity_in_store_coordinatorlayout);
+
         //todo hier muss noch für alle items geprüft werden, ob sie wirklich existieren (unknown value setzen)
+
+        int listId;
+        //restore list details
         if(savedInstanceState != null) {
 
-            //Get information about the selected shopping list
-            try {
-
-                int id = savedInstanceState.getInt(EXTRA_SHOPPING_LIST_ID);
-                this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
-
-            }
-
-            catch (IndexOutOfBoundsException e) {
-                finish(); //no such list, finish activity
-            }
+            listId = savedInstanceState.getInt(EXTRA_SHOPPING_LIST_ID);
 
         }
 
         else {
 
-            //Get information about the selected shopping list
-            try {
-
-                int id = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
-                this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
-
-            }
-
-            catch (IndexOutOfBoundsException e) {
-                finish(); //no such list, finish activity
-            }
+            listId = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
 
         }
+
+        //get information about the selected shopping list
+        this.list = ShoppingListLibrary.getInstance().getShoppingList(listId);
 
         //Set the recycler view and listener (adapter is set later)
         this.recycler = (RecyclerView) this.findViewById(R.id.activity_in_store_recyclerview);
@@ -150,7 +147,7 @@ public class InStoreActivity extends AppCompatActivity implements Refreshable {
 
                 //todo implement functionality: end shopping!, clear back stack, ...
 
-                Intent intent = new Intent(this, HomeActivity.class);
+                Intent intent = new Intent(this, ShoppingListHubActivity.class);
                 startActivity(intent);
 
                 finish();
@@ -191,6 +188,64 @@ public class InStoreActivity extends AppCompatActivity implements Refreshable {
         if(this.adapter == null || forceCreate) {
 
             this.adapter = new InStoreRecyclerViewAdapter(this.list);
+            this.adapter.setRouteClickListener(new RouteClickListener() {
+
+                @Override
+                public void onClickShowRoute(SortedShoppingListItem toItem, Material toMaterial) {
+
+                    if(lastClickedItem != null && lastClickedMaterial != null) {
+
+                        //calculate route
+                        Material fromMaterial = lastClickedMaterial;
+                        StringBuilder route = new StringBuilder("Go from " + fromMaterial);
+
+                        //while smaller --> get next material
+                        while(fromMaterial.getId() < (toMaterial.getId() - 1)) {
+
+                            route.append(" via ");
+                            fromMaterial = fromMaterial.getMaterialAbove();
+                            route.append(fromMaterial);
+
+                        }
+
+                        //while smaller --> get next material
+                        while(fromMaterial.getId() > (toMaterial.getId() + 1)) {
+
+                            route.append(" via ");
+                            fromMaterial = fromMaterial.getMaterialBelow();
+                            route.append(fromMaterial);
+
+                        }
+
+                        route.append(" to ");
+                        route.append(toMaterial);
+
+                        //show snackbar
+                        Snackbar snackbar = Snackbar.make(mainView, route.toString(), Snackbar.LENGTH_INDEFINITE);
+                        snackbar.show();
+
+                    }
+
+                    else {
+
+                        //show snackbar
+                        Snackbar snackbar = Snackbar.make(mainView, "Please check your first item", Snackbar.LENGTH_SHORT);
+                        snackbar.show();
+
+                    }
+
+                }
+
+                @Override
+                public void onCheck(SortedShoppingListItem item, Material material) {
+
+                    lastClickedItem = item;
+                    lastClickedMaterial = material;
+
+                }
+
+            });
+
             this.recycler.setAdapter(this.adapter);
 
         }

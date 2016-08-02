@@ -130,17 +130,6 @@ import java.io.Serializable;
 
                         }); //Retry Button
 
-                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, resources.getString(R.string.error_dialog_ignore), new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                dialog.dismiss();
-
-                            }
-
-                        }); //Ignore Button
-
                         dialog.show();
                     }
 
@@ -151,7 +140,7 @@ import java.io.Serializable;
 
             }
 
-            catch (SerializationException e) {
+            catch (Exception e) { //todo change to serializationchange
 
                 this.uiHandler.post(new Runnable() {
 
@@ -173,18 +162,6 @@ import java.io.Serializable;
 
                         }); //Retry Button
 
-                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, resources.getString(R.string.error_dialog_ignore), new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                //ShoppingListLibrary.this.setInitialized(true); todo set initialization...könnte das nicht über den anderen intiialized variable laufen?
-                                dialog.dismiss();
-
-                            }
-
-                        }); //Ignore Button
-
                         dialog.show();
                     }
 
@@ -203,7 +180,7 @@ import java.io.Serializable;
 
             if(this.listener != null) {
 
-                this.listener.onSetInitialized(loadedLibrary); //TODO implement! (bisher wird einfach auf true gesetzt, sobald ein mal versucht wurde zu laden (auch mit Fehler!)
+                this.listener.onSetInitialized(true); //TODO implement! (bisher wird einfach auf true gesetzt, sobald ein mal versucht wurde zu laden (auch mit Fehler!)
                 this.listener.onOperationFinished();
 
             }
@@ -375,6 +352,7 @@ import java.io.Serializable;
                 this.saveToFile(content);
 
                 Log.v("ShoppingListOverviewFr", "ShoppingListLibrary successfully saved");
+                return true;
 
             }
 
@@ -409,7 +387,7 @@ import java.io.Serializable;
 
             }
 
-            return true;
+            return false;
 
         }
 

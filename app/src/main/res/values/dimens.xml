@@ -28,6 +28,9 @@
     <dimen name="shopping_list_add_color_chooser_margin_vertical">15dp</dimen>
     <dimen name="shopping_list_add_title_textsize">26sp</dimen>
 
+    <!-- DetailStore -->
+    <dimen name="detail_store_logo_squaresize">200dp</dimen>
+
     <!-- ColorItem -->
     <dimen name="color_chooser_item_margin_horizontal_margin">10dp</dimen>
     <dimen name="color_chooser_item_squaresize">20dp</dimen>

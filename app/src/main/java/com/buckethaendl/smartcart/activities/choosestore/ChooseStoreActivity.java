@@ -18,14 +18,12 @@ import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.activities.Refreshable;
 import com.buckethaendl.smartcart.activities.choosestore.adapters.ChooseStoreAdapter;
 import com.buckethaendl.smartcart.activities.choosestore.listeners.ChooseStoreClickListener;
-import com.buckethaendl.smartcart.activities.instore.InStoreActivity;
 import com.buckethaendl.smartcart.data.library.ShoppingListLibrary;
 import com.buckethaendl.smartcart.data.local.LibraryListener;
 import com.buckethaendl.smartcart.data.service.MarketListConnector;
 import com.buckethaendl.smartcart.objects.choosestore.Market;
 import com.buckethaendl.smartcart.objects.choosestore.MarketDistance;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
-import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +32,6 @@ import java.util.List;
  * Created by Cedric on 01.08.16.
  */
 public class ChooseStoreActivity extends AppCompatActivity implements Refreshable {
-
-    public static final String TEST_COUNTRY = "DE";
-    public static final int TEST_MARKET_NO = 6250;
 
     public static final String TAG = ChooseStoreActivity.class.getName();
 
@@ -54,20 +49,23 @@ public class ChooseStoreActivity extends AppCompatActivity implements Refreshabl
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_choose_store);
 
-        //Get information about the selected shopping list
-        try {
+        int listId;
 
-            int id = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
-            this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
+        //restore list details
+        if(savedInstanceState != null) {
+
+            listId = savedInstanceState.getInt(EXTRA_SHOPPING_LIST_ID);
+
+        }
+
+        else {
+
+            listId = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
 
         }
 
-        catch (IndexOutOfBoundsException e) {
-
-            Log.e(TAG, "Selected shopping list is not known by library: " + e.getMessage());
-            finish(); //invalid shopping list
-
-        }
+        //get information about the selected shopping list
+        this.list = ShoppingListLibrary.getInstance().getShoppingList(listId);
 
         //Set the recycler view and listener (adapter is set later)
         this.recycler = (RecyclerView) this.findViewById(R.id.activity_choose_store_recyclerview);
@@ -92,6 +90,15 @@ public class ChooseStoreActivity extends AppCompatActivity implements Refreshabl
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+
+        super.onSaveInstanceState(bundle);
+
+        bundle.putInt(EXTRA_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(list));
+
+    }
+
+    @Override
     public void refreshView() {
 
         this.refreshView(false);
@@ -111,7 +118,13 @@ public class ChooseStoreActivity extends AppCompatActivity implements Refreshabl
                 public void onClick(Market market, int position) {
 
                     Log.v(TAG, "Selected id " + position + " with market " + market.toString());
-                    initiateSortShoppingList();
+
+                    Intent intent = new Intent(ChooseStoreActivity.this, DetailStoreActivity.class);
+
+                    intent.putExtra(DetailStoreActivity.EXTRA_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(list));
+                    intent.putExtra(DetailStoreActivity.EXTRA_MARKET_SERIALIZABLE, market);
+
+                    startActivity(intent);
 
                 }
 
@@ -194,13 +207,19 @@ public class ChooseStoreActivity extends AppCompatActivity implements Refreshabl
             public void onLoadResult(List<MarketDistance> results) {
 
                 marketsNearby.clear();
-                marketsNearby.addAll(results); //if not sorted correctly here, sort again
 
-                for(MarketDistance distance : marketsNearby) {
+                if(results != null) {
 
-                    Log.v(TAG, distance.getMarket().toString() + " | Distance (km): " + distance.getDistance());
+                    marketsNearby.addAll(results); //if not sorted correctly here, sort again
+
+                    for(MarketDistance distance : marketsNearby) {
+
+                        Log.v(TAG, distance.getMarket().toString() + " | Distance (km): " + distance.getDistance());
+
+                    }
 
                 }
+
 
             }
 
@@ -210,52 +229,6 @@ public class ChooseStoreActivity extends AppCompatActivity implements Refreshabl
             }
 
         });
-
-    }
-
-    private void initiateSortShoppingList() {
-
-        if(this.list != null) {
-
-            Log.v(TAG, "Starting to sort shopping list");
-
-            final ProgressDialog dialog = new ProgressDialog(this);
-            dialog.setTitle(R.string.in_store_calc_dialog_title);
-            dialog.setMessage(this.getString(R.string.in_store_calc_dialog_message));
-            dialog.setIcon(R.drawable.garlic_icon);
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dialog.setMax(this.list.size());
-
-            dialog.show();
-
-            this.list.sortList(TEST_COUNTRY, TEST_MARKET_NO, new ShoppingList.SortingListListener() {
-
-                @Override
-                public void updateProgress(int finishedItems, ShoppingListItem currentItem) {
-
-                    dialog.setProgress(finishedItems);
-                    dialog.setMessage(getString(R.string.in_store_calc_dialog_message, currentItem.getFormatedName()));
-
-                }
-
-                @Override
-                public void finishedSorting(ShoppingList list) {
-
-                    dialog.dismiss();
-
-                    Log.v(TAG, "Start shopping");
-
-                    Intent intent = new Intent(ChooseStoreActivity.this, InStoreActivity.class);
-                    intent.putExtra(InStoreActivity.EXTRA_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(list));
-
-                    startActivity(intent);
-
-
-                }
-
-            });
-
-        }
 
     }
 

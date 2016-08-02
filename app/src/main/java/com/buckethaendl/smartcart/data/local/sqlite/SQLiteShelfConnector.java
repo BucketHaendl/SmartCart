@@ -4,11 +4,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.buckethaendl.smartcart.App;
+import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.data.local.LibraryListener;
 import com.buckethaendl.smartcart.data.service.WaSaFBBShelf;
 import com.buckethaendl.smartcart.objects.instore.Shelf;
@@ -109,7 +110,6 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
     private class LoadSQLiteShelvesAsyncTask extends AsyncTask<Void, Void, Shelf> {
 
         private WaSaFBBShelf rawShelf;
-        private Handler uiHandler;
         private LibraryListener<Shelf> listener;
 
         public LoadSQLiteShelvesAsyncTask(WaSaFBBShelf rawShelf) {
@@ -128,7 +128,6 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
         @Override
         protected void onPreExecute() {
 
-            this.uiHandler = new Handler(Looper.getMainLooper());
             if(this.listener != null) this.listener.onOperationStarted();
 
         }
@@ -192,7 +191,16 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
             }
 
-            else return null; //database not present - returning null element
+            else {
+
+                Looper.prepare();
+
+                Toast toast = Toast.makeText(App.getGlobalContext(), R.string.error_07, Toast.LENGTH_SHORT);
+                toast.show();
+
+                return null; //database not present - returning null element
+
+            }
 
         }
 

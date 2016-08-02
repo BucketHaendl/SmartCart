@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
+import com.buckethaendl.smartcart.data.local.file.FileLibrary;
+
 import java.io.File;
 
 /**
@@ -15,6 +17,8 @@ import java.io.File;
  * Created by Cedric on 25.07.16.
  */
 public class App extends Application {
+
+    public static final String TAG = App.class.getName();
 
     private static Context globalContext;
 
@@ -30,6 +34,12 @@ public class App extends Application {
         //EXTERNAL_DIRECTORY = this.getDir(APP_DIRECTORY_NAME, Context.MODE_PRIVATE);
         EXTERNAL_DIRECTORY = this.getDir(DIRECTORY_NAME, MODE_PRIVATE); //TODO or use this.getDir(mode public)
         Log.e("App", "File directory: " + EXTERNAL_DIRECTORY);
+
+        //Create basic objects
+        Log.d(TAG, "Loading basic objects");
+
+        FileLibrary fileLibrary = new FileLibrary(App.EXTERNAL_DIRECTORY);
+        fileLibrary.createManagers();
 
     }
 

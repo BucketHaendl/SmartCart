@@ -1,11 +1,13 @@
 package com.buckethaendl.smartcart.data.service;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.buckethaendl.smartcart.App;
+import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.data.local.LibraryListener;
 import com.buckethaendl.smartcart.util.ConnectionUtil;
 import com.buckethaendl.smartcart.util.JsonUtil;
@@ -80,7 +82,6 @@ public class WaSaConnector {
         private int market;
         private String query;
 
-        private Handler uiHandler;
         private LibraryListener<List<WaSaFBBShelf>> listener;
 
         public LoadWaSaFBBShelvesAsyncTask(String country, int market, String query) {
@@ -101,7 +102,6 @@ public class WaSaConnector {
         @Override
         protected void onPreExecute() {
 
-            this.uiHandler = new Handler(Looper.getMainLooper());
             if (this.listener != null) this.listener.onOperationStarted();
 
         }
@@ -137,6 +137,7 @@ public class WaSaConnector {
          */
         public List<WaSaFBBShelf> queryShelves(String country, int market, String query) {
 
+            final Context context = App.getGlobalContext();
             ConnectionUtil.prepareUntrustedCertificateHackaround();
 
             String queryUrl = WASA_REST_URL
@@ -152,13 +153,28 @@ public class WaSaConnector {
                 String rawResult = readResultString(connection);
                 return parseJsonShelves(rawResult);
 
-            } catch (MalformedURLException me) {
+            }
 
-                Log.e(TAG, "Broken URL: " + queryUrl);
 
-            } catch (IOException e) {
+            catch (MalformedURLException me) {
 
-                Log.e(TAG, "Couldn't establish connection to WASA RestService with URL: " + queryUrl);
+                Looper.prepare();
+                Toast toast = Toast.makeText(context, R.string.error_06, Toast.LENGTH_SHORT);
+                toast.show();
+
+                Log.e(TAG, "Broken URL when trying to connect to WaSa Restservice");
+                me.printStackTrace();
+
+            }
+
+            catch (IOException e) {
+
+                Looper.prepare();
+                Toast toast = Toast.makeText(context, R.string.error_07, Toast.LENGTH_SHORT);
+                toast.show();
+
+                Log.e(TAG, "Couldn't establish connection to WASA-restservice");
+                e.printStackTrace();
 
             }
 
@@ -173,6 +189,8 @@ public class WaSaConnector {
          * @return A string containing the resulting JSON
          */
         private String readResultString(HttpsURLConnection connection) {
+
+            final Context context = App.getGlobalContext();
 
             if (USE_LOCAL_FILE) { //todo remove
 
@@ -206,8 +224,23 @@ public class WaSaConnector {
 
             else {
 
-                //reads the JSON String from the connection
-                return JsonUtil.getJsonContent(connection);
+                try {
+
+                    //reads the JSON String from the connection
+                    return JsonUtil.getJsonContent(connection);
+
+                }
+
+                catch (IOException e) {
+
+                    Looper.prepare();
+                    Toast toast = Toast.makeText(context, R.string.error_08, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    Log.v(TAG, "IOException occurred while trying to read Json from Content");
+                    e.printStackTrace();
+
+                }
 
             }
 

@@ -11,6 +11,7 @@
         android:id="@+id/activity_shopping_list_hub_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        app:title="@string/shopping_list_overview_activity_actionbar_title"
         android:background="?attr/colorPrimary"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>

@@ -43,37 +43,23 @@ public class ShoppingListDetailsActivity extends AppCompatActivity implements Re
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_shopping_list_details);
 
+        int listId;
+
+        //restore list details
         if(savedInstanceState != null) {
 
-            //Get information about the selected shopping list
-            try {
-
-                int id = savedInstanceState.getInt(EXTRA_SHOPPING_LIST_ID);
-                this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
-
-            }
-
-            catch (IndexOutOfBoundsException e) {
-                finish(); //no such list, finish activity
-            }
+            listId = savedInstanceState.getInt(EXTRA_SHOPPING_LIST_ID);
 
         }
 
         else {
 
-            //Get information about the selected shopping list
-            try {
-
-                int id = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
-                this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
-
-            }
-
-            catch (IndexOutOfBoundsException e) {
-                finish(); //no such list, finish activity
-            }
+            listId = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
 
         }
+
+        //get information about the selected shopping list
+        this.list = ShoppingListLibrary.getInstance().getShoppingList(listId);
 
         //Set the recycler view and listener (adapter is set later)
         this.recycler = (RecyclerView) this.findViewById(R.id.activity_shopping_list_details_recyclerview);
@@ -156,7 +142,7 @@ public class ShoppingListDetailsActivity extends AppCompatActivity implements Re
 
                 Intent intent = new Intent(this, ShoppingListNewActivity.class);
 
-                intent.putExtra(ShoppingListNewActivity.EXTRA_EDIT_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(this.list));
+                intent.putExtra(ShoppingListNewActivity.EXTRA_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(this.list));
                 startActivityForResult(intent, RQ_EDIT_MODE);
 
                 return true;

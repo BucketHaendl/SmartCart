@@ -43,13 +43,6 @@ public class ShoppingListHubActivity extends AppCompatActivity implements Refres
         Toolbar supportToolbar = (Toolbar) this.findViewById(R.id.activity_shopping_list_hub_toolbar);
         this.setSupportActionBar(supportToolbar);
 
-        if (this.getSupportActionBar() != null) {
-
-            this.getSupportActionBar().setTitle(getString(R.string.shopping_list_overview_activity_actionbar_title));
-            this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        }
-
         //set library
         this.library = ShoppingListLibrary.getInstance();
         this.library.addListener(new ShoppingListLibraryListener());

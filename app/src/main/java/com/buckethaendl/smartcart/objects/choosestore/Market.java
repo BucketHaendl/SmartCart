@@ -1,8 +1,13 @@
 package com.buckethaendl.smartcart.objects.choosestore;
 
+import com.buckethaendl.smartcart.R;
+
+import java.io.Serializable;
 import java.util.Locale;
 
-public class Market {
+public class Market implements Serializable {
+
+    public static final int DEFAULT_DRAWABLE = R.drawable.kaufland_market;
 
     private String country;
     private Opening[] specialOpeningHours;
@@ -19,6 +24,7 @@ public class Market {
     private Opening[] openingHours;
     private Double longitude;
     private String updatedAt;
+    private int drawableId;
 
     public Market(String country, Opening[] specialOpeningHours, String[] serviceCounters, String city, Double latitude, String[] services,
                   String storeId, String type, String zipcode, String phone, String street, Company company, Opening[] openingHours,
@@ -98,6 +104,17 @@ public class Market {
 
     public String getUpdatedAt() {
         return updatedAt;
+    }
+
+    /**
+     * Returns the drawable id of the logo of this market
+     * NOTE: Will always return Kaufland logo by now
+     * @return The int id of the drawable
+     */
+    public int getDrawableId() {
+
+        if(drawableId != 0) return drawableId;
+        else return DEFAULT_DRAWABLE;
     }
 
     @Override

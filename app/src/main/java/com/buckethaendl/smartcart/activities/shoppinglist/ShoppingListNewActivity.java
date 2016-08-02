@@ -37,8 +37,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
     public static final String TAG = "ShoppingListNewAc";
 
-    public static final String EXTRA_EDIT_SHOPPING_LIST_ID = "extra_edit_shopping_list_id";
-    public static final String EXTRA_EDIT_BUNDLE = "extra_edit_bundle";
+    public static final String EXTRA_SHOPPING_LIST_ID = "extra_shopping_list_id";
 
     protected ShoppingList list;
 
@@ -56,50 +55,37 @@ public class ShoppingListNewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_shopping_list_new);
 
-        //try to load the list from a previous instance
+        int listId = -1;
+
+        //restore list details
         if(savedInstanceState != null) {
 
-            //Get information about the selected shopping list
-            try {
-
-                int id = savedInstanceState.getInt(EXTRA_EDIT_SHOPPING_LIST_ID);
-                this.list = ShoppingListLibrary.getInstance().getShoppingList(id);
-
-            }
-
-            catch (IndexOutOfBoundsException e) {
-                finish(); //no such list, finish activity
-            }
-            Log.v(TAG, "Recreated list from instance state");
-
-        }
-
-        //try to load the list from an intent (edit mode)
-        else {
-
-            if(this.getIntent().hasExtra(EXTRA_EDIT_SHOPPING_LIST_ID)) {
-
-                this.list = ShoppingListLibrary.getInstance().getShoppingList(this.getIntent().getIntExtra(EXTRA_EDIT_SHOPPING_LIST_ID, -1));
-                Log.v(TAG, "Recreated list from passed bundle");
-
-            }
-
-        }
-
-        //if the list is still null, create a new one
-        if(this.list == null) {
-
-            //Get information about the selected shopping list
-            this.list = new ShoppingList(getString(R.string.shopping_list_add_activity_new_list_name), Calendar.getInstance());
-            Log.v(TAG, "New list created");
+            listId = savedInstanceState.getInt(EXTRA_SHOPPING_LIST_ID);
 
         }
 
         else {
+
+            if(getIntent().hasExtra(EXTRA_SHOPPING_LIST_ID)) listId = getIntent().getIntExtra(EXTRA_SHOPPING_LIST_ID, -1);
+
+        }
+
+        if(listId != -1) {
+
+            //get information about the selected shopping list
+            this.list = ShoppingListLibrary.getInstance().getShoppingList(listId);
 
             //Set the loaded values
             TextView title = (TextView) this.findViewById(R.id.activity_shopping_list_add_name_edittext);
             title.setText(this.list.getName());
+
+        }
+
+        else {
+
+            //Get information about the selected shopping list
+            this.list = new ShoppingList(getString(R.string.shopping_list_add_activity_new_list_name), Calendar.getInstance());
+            Log.v(TAG, "New list created");
 
         }
 
@@ -149,7 +135,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                addNewItem(addItemText.getText().toString());
+                addNewItem();
 
             }
 
@@ -162,14 +148,14 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
                 if(actionId == EditorInfo.IME_ACTION_DONE) {
 
-                    addNewItem(addItemText.getText().toString());
+                    addNewItem();
                     return true;
 
                 }
 
                 if(keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
 
-                    addNewItem(addItemText.getText().toString());
+                    addNewItem();
                     return true;
 
                 }
@@ -248,7 +234,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
         super.onSaveInstanceState(outState);
 
-        outState.putInt(EXTRA_EDIT_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(this.list));
+        outState.putInt(EXTRA_SHOPPING_LIST_ID, ShoppingListLibrary.getInstance().indexOf(this.list));
 
     }
 
@@ -262,9 +248,8 @@ public class ShoppingListNewActivity extends AppCompatActivity {
 
     /**
      * Adds a new item with the given name to the shopping list
-     * @param itemName The name / text of the item to be added
      */
-    public void addNewItem(String itemName) {
+    public void addNewItem() {
 
         //called when an item should be added
         //todo keine Überprüfung bisher
@@ -302,8 +287,21 @@ public class ShoppingListNewActivity extends AppCompatActivity {
      */
     public void onDoneButtonClick(View view) {
 
-        if(this.isWorthSaving()) this.saveCurrentListState(true);
-        this.finish();
+        EditText addItemEditText = (EditText) addItemView.findViewById(R.id.shopping_list_new_item_edittext);
+
+        if(!addItemEditText.getText().toString().isEmpty()) {
+
+            addNewItem();
+
+        }
+
+        else {
+
+            if(this.isWorthSaving()) this.saveCurrentListState(true);
+            this.finish();
+
+        }
+
 
     }
 
@@ -354,7 +352,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
     public void saveCurrentListState(boolean saveImmediately) {
 
         //Add the add item, that might not have been added fully by now (just to make sure, we don't lose this last item)
-        addNewItem(this.addItemText.getText().toString());
+        addNewItem();
 
         //Save the title and icon of the list
         EditText titleEditText = (EditText) this.findViewById(R.id.activity_shopping_list_add_name_edittext);

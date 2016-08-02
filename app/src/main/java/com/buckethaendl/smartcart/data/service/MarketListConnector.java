@@ -1,8 +1,13 @@
 package com.buckethaendl.smartcart.data.service;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.buckethaendl.smartcart.App;
+import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.data.local.LibraryListener;
 import com.buckethaendl.smartcart.objects.choosestore.DistanceCalculator;
 import com.buckethaendl.smartcart.objects.choosestore.Market;
@@ -110,6 +115,8 @@ public class MarketListConnector {
         @Override
         protected void onPostExecute(List<MarketDistance> loadedMarkets) {
 
+            if(loadedMarkets == null) return; //do not proceed if nothing loaded
+
             if (this.listener != null) {
 
                 this.listener.onOperationFinished();
@@ -118,7 +125,9 @@ public class MarketListConnector {
 
         }
 
-        private List<MarketDistance> loadMarkets(double userLongitude, double userLatitude, int maxResults) {
+        private List<MarketDistance> loadMarkets(final double userLongitude, final double userLatitude, final int maxResults) {
+
+            final Context context = App.getGlobalContext();
 
             ConnectionUtil.prepareUntrustedCertificateHackaround();
             this.setDefaultAuthenticator();
@@ -128,19 +137,41 @@ public class MarketListConnector {
                 HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
                 List<Market> allMaerkte = parseJsonToMarkets(connection);
                 return getMaxNumberWithDistance(userLongitude, userLatitude, maxResults, allMaerkte);
-            } catch (MalformedURLException me) {
+            }
+
+            catch (MalformedURLException me) {
+
+                Looper.prepare();
+                Toast toast = Toast.makeText(context, R.string.error_04, Toast.LENGTH_SHORT);
+                toast.show();
+
                 Log.e(TAG, "Broken URL: " + FILIALLISTE_URL);
                 me.printStackTrace();
-            } catch (IOException e) {
+
+            }
+
+            catch (IOException e) {
+
+                Looper.prepare();
+                Toast toast = Toast.makeText(context, R.string.error_05, Toast.LENGTH_SHORT);
+                toast.show();
+
                 Log.e(TAG, "Couldn't establish connection to WASA-restservice with URL: " + FILIALLISTE_URL);
                 e.printStackTrace();
+
+                Toast toast2 = Toast.makeText(context, R.string.error_08, Toast.LENGTH_SHORT);
+                toast2.show();
+
+                Log.v(TAG, "IOException occurred while trying to read Json from Content");
+                e.printStackTrace();
+
             }
 
             return null;
 
         }
 
-        private List<Market> parseJsonToMarkets(HttpsURLConnection connection) {
+        private List<Market> parseJsonToMarkets(HttpsURLConnection connection) throws IOException {
 
             String json = JsonUtil.getJsonContent(connection);
 

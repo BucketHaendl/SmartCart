@@ -1,10 +1,13 @@
-package com.buckethaendl.smartcart.activities.shoppinglist.adapters;
+package com.buckethaendl.smartcart.activities.instore.adapters;
 
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 
+import com.buckethaendl.smartcart.activities.instore.listeners.RouteClickListener;
+import com.buckethaendl.smartcart.activities.shoppinglist.adapters.ShoppingListRecyclerViewAdapter;
 import com.buckethaendl.smartcart.objects.instore.Material;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
@@ -21,14 +24,13 @@ public class InStoreRecyclerViewAdapter extends ShoppingListRecyclerViewAdapter 
     public static final String TAG = InStoreRecyclerViewAdapter.class.getName();
 
     private Map<ShoppingListItem, Material> shownMaterials = new HashMap<ShoppingListItem, Material>();
+    private RouteClickListener listener;
 
     public InStoreRecyclerViewAdapter(ShoppingList list) {
 
         super(list);
 
     }
-
-
 
     @Override
     public void onBindViewHolder(final ShoppingItemViewHolder holder, final int position) {
@@ -41,10 +43,11 @@ public class InStoreRecyclerViewAdapter extends ShoppingListRecyclerViewAdapter 
 
         if(item instanceof SortedShoppingListItem) {
 
+            final SortedShoppingListItem sortedItem = ((SortedShoppingListItem) item);
             ImageButton categoryButton = holder.getImageButton();
-            int priority = ((SortedShoppingListItem) item).getShelf().getPriority();
+            int priority = sortedItem.getShelf().getPriority();
 
-            Material mat = Material.getMaterial(Material.getMaterialId(priority));
+            final Material mat = Material.getMaterial(Material.getMaterialId(priority));
 
             if(mat != null) {
 
@@ -68,6 +71,33 @@ public class InStoreRecyclerViewAdapter extends ShoppingListRecyclerViewAdapter 
                 //else, set to invisible
                 else categoryButton.setVisibility(View.INVISIBLE);
 
+                //trigger listener
+                holder.getView().setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+
+                        if(listener != null) listener.onClickShowRoute(sortedItem, mat);
+
+                    }
+
+                });
+
+                holder.getCheckBox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+
+                        //only if the item was checked
+                        if(checked) {
+
+                            if(listener != null) listener.onCheck(sortedItem, mat);
+
+                        }
+
+                    }
+
+                });
 
             }
 
@@ -83,6 +113,14 @@ public class InStoreRecyclerViewAdapter extends ShoppingListRecyclerViewAdapter 
 
         else Log.e(TAG, "Item " + item.getFormatedName() + " was not sorted in!"); //todo maybe show error icon (!) next to item
 
+    }
+
+    public RouteClickListener getRouteClickListener() {
+        return this.listener;
+    }
+
+    public void setRouteClickListener(RouteClickListener listener) {
+        this.listener = listener;
     }
 
 }

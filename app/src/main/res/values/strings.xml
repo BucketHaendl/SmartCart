@@ -46,9 +46,17 @@
     <string name="error_dialog_ignore">Ignore</string>
 
     <!-- error messages -->
-    <string name="error_01">ERROR 01: Shopping lists could not be loaded from file! Is your SD-card not inserted or full? You may restart the app or try again later</string>
-    <string name="error_02">ERROR 02: Shopping lists could not be loaded from file! Something is wrong with the file</string>
-    <string name="error_03">ERROR 03: Shopping lists could not be saved to file! Is your SD-card not inserted or full?</string>
+    <string name="error_01">ERROR 01:\nShopping lists could not be loaded from file! Is your SD-card not inserted or full? You may restart the app or try again later</string>
+    <string name="error_02">ERROR 02:\nShopping lists could not be loaded from file! Something is wrong with the file</string>
+    <string name="error_03">ERROR 03:\nShopping lists could not be saved to file! Is your SD-card not inserted or full?</string>
+    <string name="error_04">ERROR 04:\nThe given URL for retrieving list of markets is broken or malformed</string>
+    <string name="error_05">ERROR 05:\nNo internet connection established. Is WiFi on and the market server up and running?</string>
+    <string name="error_06">ERROR 06:\nThe given URL for retrieving WaSa details is broken or malformed</string>
+    <string name="error_07">ERROR 07:\nNo internet connection established. Is WiFi on and the WaSa restservice and running?</string>
+    <string name="error_08">ERROR 08:\nCould not read JSON from Service properly</string>
+    <string name="error_09">ERROR 09:\nLocal database stores.db is not present or could not be loaded</string>
+
+    <!-- other -->
     <string name="icon_chooser_item_contentdescription">Icon</string>
     <string name="shopping_list_add_name_hint">New List</string>
     <string name="delete">Delete</string>
@@ -67,5 +75,11 @@
     <string name="choose_store_activity_store_distance_format">%.1f km</string>
     <string name="loading_stores_dialog_title">Loading markets</string>
     <string name="loading_stores_dialog_message">Please wait</string>
+
+    <string name="detail_store_activity_store_name_format">Store ID: %s</string>
+    <string name="detail_store_activity_store_address_format">%1$s\n%2$s %3$s</string>
+    <string name="detail_store_activity_shopping_list_format">Shopping with %1$s</string>
+
+    <string name="detail_store_activity_standard_opening_format">[%1$s]\t\t%2$d:%3$d Uhr - %4$d:%5$d Uhr</string>
 
 </resources>

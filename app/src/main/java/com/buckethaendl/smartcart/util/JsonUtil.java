@@ -12,7 +12,7 @@ public abstract class JsonUtil {
 
     public static final String TAG = JsonUtil.class.getName();
 
-    public static String getJsonContent(HttpsURLConnection connection){
+    public static String getJsonContent(HttpsURLConnection connection) throws IOException {
 
         if(connection!=null){
 
@@ -30,8 +30,8 @@ public abstract class JsonUtil {
             }
 
             catch (IOException e){
-                Log.e(TAG, "No Answer from URL: "+connection.getURL().toString());
-                e.printStackTrace();
+
+                throw new IOException("No answer from URL: " + e.getMessage());
             }
         }
 
