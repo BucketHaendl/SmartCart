@@ -5,7 +5,9 @@ import android.util.Log;
 
 import com.buckethaendl.smartcart.App;
 import com.buckethaendl.smartcart.R;
+import com.buckethaendl.smartcart.data.library.WaSaOfflineLibrary;
 import com.buckethaendl.smartcart.data.local.sqlite.SQLiteShelfConnector;
+import com.buckethaendl.smartcart.data.service.FBBShelf;
 import com.buckethaendl.smartcart.data.service.WaSaConnector;
 import com.buckethaendl.smartcart.data.service.WaSaFBBShelf;
 import com.buckethaendl.smartcart.objects.instore.Shelf;
@@ -176,9 +178,9 @@ public class ShoppingList extends ArrayList<ShoppingListItem> implements Seriali
      * NOTE that this action requires internet and can have a quite heavy workload!
      * todo maybe only one central background task to do everything in (just one Thread with Listener, etc.) and no multi-threading in itself
      */
-    public void sortList(final String country, final int market, final SortingListListener listener) {
+    public void sortList(final String country, final int market, final SortingListListener listener, final boolean forceOffline) {
 
-        Log.v(TAG, "Starting sorting list " + this.getName() + " for country " + country + " in market " + market);
+        Log.v(TAG, "Starting sorting list " + this.getName() + " for country " + country + " in market " + market + " offline " + forceOffline);
 
         final List<SortedShoppingListItem> sortedItems = new ArrayList<SortedShoppingListItem>();
         final SQLiteShelfConnector connector = SQLiteShelfConnector.getInstance();
@@ -193,20 +195,85 @@ public class ShoppingList extends ArrayList<ShoppingListItem> implements Seriali
                     Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Start sorting");
                     this.publishProgress(item);
 
-                    //for every item, the corresponding shelves are loaded
-                    List<WaSaFBBShelf> fbbShelves = WaSaConnector.getInstance().loadShelvesSync(country, market, item.getFormatedName());
+                    List<? extends FBBShelf> fbbShelves = null;
 
-                    final List<Shelf> realShelves = new ArrayList<Shelf>(); //maps found shelves to occurrances
-                    for (WaSaFBBShelf fbbShelf : fbbShelves) {
+                    //the corresponding shelves are loaded via the WaSa online service
+                    if(!forceOffline) {
 
-                        Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Found FBB " + fbbShelf.getFbbNr());
-                        realShelves.add(connector.loadShelfSync(fbbShelf));
+                        Log.v(TAG, "Loading online WaSa shelves for " + item.getFormatedName());
+                        fbbShelves = WaSaConnector.getInstance().loadShelvesSync(country, market, item.getFormatedName());
 
                     }
 
-                    Shelf shelf = Importancer.findMostImportant(realShelves);
+                    else Log.v(TAG, "Forcing offline FBB searching");
 
-                    Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Most important shelf: " + shelf.getShelfId() + " (priority: " + shelf.getPriority() + ")");
+                    //loading offline FBBs as well every time! (in case of water, only water is the right shelf, not Obstwasser!)
+                    Log.v(TAG, "Loading offline shelves for " + item.getFormatedName());
+                    List<? extends FBBShelf> offlineShelves = WaSaOfflineLibrary.getInstance().loadShelvesOffline(country, market, item.getFormatedName());
+
+                    //if shelves found offline
+                    if(offlineShelves != null && !offlineShelves.isEmpty()) {
+
+                        //override existing entries when offline results were found
+                        fbbShelves = offlineShelves;
+
+                    }
+
+                    Shelf shelf = null;
+
+                    //if still no FBBShelves found
+                    if(fbbShelves == null || fbbShelves.isEmpty()) {
+
+                        Log.v(TAG, "No results found for " + item.getDisplayName() + ", set to unknown");
+
+                    }
+
+                    else {
+
+                        //maps found shelves to occurrances and articles
+                        final List<Shelf> realShelves = new ArrayList<Shelf>();
+                        for (FBBShelf fbbShelf : fbbShelves) {
+
+                            //try to find a shelf for this fbb in the database
+                            Shelf correspondingShelf = connector.loadShelfSync(fbbShelf);
+
+                            //only add non-null shelves
+                            if(correspondingShelf != null) {
+
+                                realShelves.add(correspondingShelf);
+                                Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Found FBB " + fbbShelf.getFbbNr() + " with article count " + (fbbShelf instanceof WaSaFBBShelf ? ((WaSaFBBShelf) fbbShelf).getArtikel().size() : "1"));
+
+                            }
+
+                        }
+
+                        //todo remove fake - this is just for testing
+                        //todo wenn zwei shelves gleich werden sie nicht hinzugeft
+                        /*
+                        realShelves.add(new Shelf(1202, 1202, 1, 1, null));
+                        realShelves.add(new Shelf(200, 200, 1, 1, null));
+                        realShelves.add(new Shelf(200, 200, 1, 1, null));
+                        realShelves.add(new Shelf(1203, 1203, 1, 1, null));
+                        realShelves.add(new Shelf(102, 102, 1, 1, null));
+                        realShelves.add(new Shelf(200, 200, 1, 1, null));*/
+
+                        shelf = Importancer.findMostImportant(realShelves);
+
+                    }
+
+                    //check if the shelf could be found
+                    if(shelf != null) {
+
+                        Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "Most important shelf: " + shelf.getShelfId() + " (priority: " + shelf.getPriority() + ")");
+
+                    }
+
+                    else {
+
+                        shelf = Shelf.UNKNOWN; //set to unknown
+                        Log.v(TAG, "[" + item.getFormatedName().toUpperCase() + "] " + "No shelf found");
+
+                    }
 
                     SortedShoppingListItem sortedItem = new SortedShoppingListItem(item, shelf);
                     sortedItems.add(sortedItem);

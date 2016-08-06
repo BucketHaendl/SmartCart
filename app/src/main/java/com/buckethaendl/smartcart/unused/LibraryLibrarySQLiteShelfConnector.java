@@ -128,7 +128,7 @@ public class LibraryLibrarySQLiteShelfConnector extends SQLiteOpenHelper impleme
 
                     //retrieve values
                     //create shelf object
-                    Shelf shelf = new Shelf(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3));
+                    Shelf shelf = new Shelf(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), null);
                     shelves.add(shelf);
 
                 } while(cursor.moveToNext());

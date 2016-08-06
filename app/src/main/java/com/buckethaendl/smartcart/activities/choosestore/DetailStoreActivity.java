@@ -9,9 +9,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.activities.instore.InStoreActivity;
@@ -37,6 +40,9 @@ public class DetailStoreActivity extends AppCompatActivity {
     private TextView addressText;
     private TextView openingText;
     private TextView shoppingListText;
+
+    private boolean forceOfflineMode = false; //set to true to prevent loading from real WaSa service
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -145,6 +151,32 @@ public class DetailStoreActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        this.getMenuInflater().inflate(R.menu.detail_store_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.detail_store_offlinemode_menuitem) {
+
+            this.forceOfflineMode = !this.forceOfflineMode; //change mode
+
+            Toast toast = Toast.makeText(this, "Use offline? " + this.forceOfflineMode, Toast.LENGTH_SHORT);
+            toast.show();
+
+            return true;
+
+        }
+
+        else return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle bundle) {
 
         super.onSaveInstanceState(bundle);
@@ -163,7 +195,7 @@ public class DetailStoreActivity extends AppCompatActivity {
             final ProgressDialog dialog = new ProgressDialog(this);
             dialog.setTitle(R.string.in_store_calc_dialog_title);
             dialog.setMessage(this.getString(R.string.in_store_calc_dialog_message));
-            dialog.setIcon(R.drawable.garlic_icon);
+            dialog.setIcon(R.drawable.ic_navigation_black_24dp);
             dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             dialog.setMax(this.list.size());
 
@@ -197,7 +229,7 @@ public class DetailStoreActivity extends AppCompatActivity {
 
                 }
 
-            });
+            }, forceOfflineMode);
 
         }
 

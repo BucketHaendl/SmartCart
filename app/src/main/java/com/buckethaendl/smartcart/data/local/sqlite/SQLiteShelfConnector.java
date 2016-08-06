@@ -4,17 +4,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
-import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.buckethaendl.smartcart.App;
-import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.data.local.LibraryListener;
+import com.buckethaendl.smartcart.data.service.FBBShelf;
+import com.buckethaendl.smartcart.data.service.WaSaArticle;
 import com.buckethaendl.smartcart.data.service.WaSaFBBShelf;
 import com.buckethaendl.smartcart.objects.instore.Shelf;
 
 import java.io.File;
+import java.util.List;
 
 public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
@@ -23,7 +23,7 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
     public static final String[] SELECTED_COLUMNS = {"shelf", "priority", "x", "y"}; //todo update to correct values!
     public static final String FBB_COLUMN_NAME = "fbb";
 
-    public static final String DATABASE_NAME = "stores.db";
+    public static final String DATABASE_NAME = "stores"; //todo .db missing
 
     public static final String TABLE_NAME = "DE_6250"; //todo make changable
 
@@ -57,9 +57,10 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
             try {
 
-                //Log.d("DATABASE FILE CHECK", "Database " + DATABASE_NAME + " Path: (" + fullPath.getPath() + ") Existing: " + fullPath.exists());
-
                 File fullPath = new File(App.EXTERNAL_DIRECTORY, DATABASE_NAME);
+
+                Log.d("DATABASE FILE CHECK", "Database " + DATABASE_NAME + " Path: (" + fullPath.getPath() + ") Existing: " + fullPath.exists());
+
                 this.database = SQLiteDatabase.openDatabase(fullPath.toString(), null, SQLiteDatabase.OPEN_READONLY);
 
                 Log.v(TAG, "DB " + DATABASE_NAME + " opened from " + App.EXTERNAL_DIRECTORY);
@@ -92,7 +93,8 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
     /**
      * Returns the shelves in a sync task to directly retrieve them (hackaround)
      */
-    public Shelf loadShelfSync(WaSaFBBShelf rawShelf) {
+    @Override
+    public Shelf loadShelfSync(FBBShelf rawShelf) {
 
         LoadSQLiteShelvesAsyncTask task = new LoadSQLiteShelvesAsyncTask(rawShelf);
         return task.doInBackground();
@@ -100,7 +102,7 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
     }
 
     @Override
-    public void loadShelfAsync(WaSaFBBShelf rawShelf, LibraryListener<Shelf> listener) {
+    public void loadShelfAsync(FBBShelf rawShelf, LibraryListener<Shelf> listener) {
 
         LoadSQLiteShelvesAsyncTask task = new LoadSQLiteShelvesAsyncTask(rawShelf, listener);
         task.execute();
@@ -109,16 +111,16 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
     private class LoadSQLiteShelvesAsyncTask extends AsyncTask<Void, Void, Shelf> {
 
-        private WaSaFBBShelf rawShelf;
+        private FBBShelf rawShelf;
         private LibraryListener<Shelf> listener;
 
-        public LoadSQLiteShelvesAsyncTask(WaSaFBBShelf rawShelf) {
+        public LoadSQLiteShelvesAsyncTask(FBBShelf rawShelf) {
 
             this(rawShelf, null);
 
         }
 
-        public LoadSQLiteShelvesAsyncTask(WaSaFBBShelf rawShelf, LibraryListener<Shelf> listener) {
+        public LoadSQLiteShelvesAsyncTask(FBBShelf rawShelf, LibraryListener<Shelf> listener) {
 
             this.rawShelf = rawShelf;
             this.listener = listener;
@@ -134,6 +136,8 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
         @Override
         protected Shelf doInBackground(Void...voids) {
+
+
 
             Shelf resultShelf = this.loadShelf();
             if(this.listener != null) this.listener.onLoadResult(resultShelf);
@@ -168,16 +172,26 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
                 if(cursor.moveToFirst()) {
 
-                    shelf = new Shelf(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3));
-                    Log.v(TAG, "[" + this.rawShelf.getFbbNr() + "] " + "Mapped to shelf " + shelf.getShelfId());
+                    //get articles and add to shelf
+                    List<WaSaArticle> articles = null;
+                    if(rawShelf instanceof WaSaFBBShelf) {
+
+                        articles = ((WaSaFBBShelf) rawShelf).getArtikel();
+
+
+                    }
+
+                    shelf = new Shelf(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), articles);
+                    //Log.v(TAG, "[" + this.rawShelf.getFbbNr() + "] " + "Mapped to shelf " + shelf.getShelfId());
 
                 }
 
+                /*
                 else {
 
                     Log.w(TAG, "[" + this.rawShelf.getFbbNr() + "] " + "Unmapped");
 
-                }
+                }*/
 
                 //Free Resources (not close database!)
                 if(cursor != null) {
@@ -193,10 +207,7 @@ public class SQLiteShelfConnector implements SQLiteShelfInteractable {
 
             else {
 
-                Looper.prepare();
-
-                Toast toast = Toast.makeText(App.getGlobalContext(), R.string.error_07, Toast.LENGTH_SHORT);
-                toast.show();
+                //error 07
 
                 return null; //database not present - returning null element
 

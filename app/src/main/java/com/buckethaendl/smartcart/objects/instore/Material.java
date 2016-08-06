@@ -1,25 +1,27 @@
 package com.buckethaendl.smartcart.objects.instore;
 
 
-import com.buckethaendl.smartcart.objects.shoppinglist.Icons;
+import com.buckethaendl.smartcart.R;
 
 /**
  * Created by Cedric on 29.07.16.
  */
 public enum Material {
 
-    FRISCHE(1, "Fresh", Icons.getRandomIcon()),
-    NAHRUNG_UNGEK(2, "Uncooled", Icons.getRandomIcon()),
-    TK_U_FLEISCH(3, "Meat", Icons.getRandomIcon()),
-    MOPRO(4, "Milk", Icons.getRandomIcon()),
-    HAUSHALTSW(5, "House", Icons.getRandomIcon()),
-    ALKOHOL(6, "Alcohol", Icons.getRandomIcon()),
-    NON_FOOD(7, "Non-Food", Icons.getRandomIcon()),
-    SNACKS(8, "Snacks", Icons.getRandomIcon()),
-    GETRAENKE(9, "Beverages", Icons.getRandomIcon()),
-    WERBUNG(10, "Ads", Icons.getRandomIcon()),
-    HAUSHALTSM(11, "Daily", Icons.getRandomIcon()),
-    TIERFUTTER_KASSE(12, "Pets", Icons.getRandomIcon());
+    UNKNOWN(-1, "Unknown", R.drawable.category_unknown), //unknwon category
+
+    FRISCHE(1, "Fresh", R.drawable.category_fresh),
+    NAHRUNG_UNGEK(2, "Uncooled", R.drawable.category_uncooled),
+    TK_U_FLEISCH(3, "Meat", R.drawable.category_meat),
+    MOPRO(4, "Milk", R.drawable.category_milk),
+    HAUSHALTSW(5, "House", R.drawable.category_household),
+    ALKOHOL(6, "Alcohol", R.drawable.category_alcohol),
+    NON_FOOD(7, "Non-Food", R.drawable.category_nonfood),
+    SNACKS(8, "Snacks", R.drawable.category_snacks),
+    GETRAENKE(9, "Beverages", R.drawable.category_beverages),
+    WERBUNG(10, "Ads", R.drawable.category_ads),
+    HAUSHALTSM(11, "Daily", R.drawable.category_daily),
+    TIERFUTTER_KASSE(12, "Pets", R.drawable.category_icecream);
 
     private int id;
     private String name;

@@ -1,7 +1,7 @@
 package com.buckethaendl.smartcart.data.local.sqlite;
 
 import com.buckethaendl.smartcart.data.local.LibraryListener;
-import com.buckethaendl.smartcart.data.service.WaSaFBBShelf;
+import com.buckethaendl.smartcart.data.service.FBBShelf;
 import com.buckethaendl.smartcart.objects.instore.Shelf;
 
 /**
@@ -9,6 +9,7 @@ import com.buckethaendl.smartcart.objects.instore.Shelf;
  */
 public interface SQLiteShelfInteractable {
 
-    void loadShelfAsync(WaSaFBBShelf rawShelf, LibraryListener<Shelf> listener);
+    Shelf loadShelfSync(FBBShelf rawShelf);
+    void loadShelfAsync(FBBShelf rawShelf, LibraryListener<Shelf> listener);
 
 }

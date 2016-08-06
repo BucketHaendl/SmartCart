@@ -1,5 +1,7 @@
 package com.buckethaendl.smartcart.data.service;
 
+import java.util.Locale;
+
 public class WaSaArticle {
 
     private Long id;
@@ -12,15 +14,23 @@ public class WaSaArticle {
         this.kategorie = kategorie;
     }
 
-    public Long getId() {
+    private Long getId() {
         return id;
     }
 
-    public String getBezeichnung() {
+    private String getBezeichnung() {
         return bezeichnung;
     }
 
-    public String getKategorie() {
+    private String getKategorie() {
         return kategorie;
     }
+
+    @Override
+    public String toString() {
+
+        return String.format(Locale.GERMANY, "[Article] " + getBezeichnung().replace("%", "%%"));
+
+    }
+
 }

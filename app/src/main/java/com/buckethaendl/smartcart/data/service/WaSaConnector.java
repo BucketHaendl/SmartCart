@@ -34,7 +34,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class WaSaConnector {
 
     public static final String TAG = WaSaConnector.class.getName();
-    private static final boolean USE_LOCAL_FILE = true;
+    private static final boolean USE_LOCAL_FILE = false; //todo set to false!!!
 
     private static final String COUNTRY_PH = "{country}";
     private static final String MARKT_PH = "{number}";
@@ -81,7 +81,6 @@ public class WaSaConnector {
         private String country;
         private int market;
         private String query;
-
         private LibraryListener<List<WaSaFBBShelf>> listener;
 
         public LoadWaSaFBBShelvesAsyncTask(String country, int market, String query) {
@@ -233,9 +232,9 @@ public class WaSaConnector {
 
                 catch (IOException e) {
 
-                    Looper.prepare();
-                    Toast toast = Toast.makeText(context, R.string.error_08, Toast.LENGTH_SHORT);
-                    toast.show();
+                    //Looper.prepare();
+                    //Toast toast = Toast.makeText(context, R.string.error_08, Toast.LENGTH_SHORT);
+                    //toast.show();
 
                     Log.v(TAG, "IOException occurred while trying to read Json from Content");
                     e.printStackTrace();

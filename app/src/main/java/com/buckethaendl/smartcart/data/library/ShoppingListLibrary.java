@@ -3,11 +3,11 @@ package com.buckethaendl.smartcart.data.library;
 import android.content.Context;
 import android.util.Log;
 
-import com.buckethaendl.smartcart.R;
 import com.buckethaendl.smartcart.data.local.file.FileInteractable;
 import com.buckethaendl.smartcart.data.local.file.FileLibrary;
 import com.buckethaendl.smartcart.data.local.file.FileLibraryListener;
 import com.buckethaendl.smartcart.objects.exceptions.NotInitializedException;
+import com.buckethaendl.smartcart.objects.shoppinglist.Icons;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
 
@@ -91,13 +91,13 @@ public class ShoppingListLibrary implements ListenerLibrary {
         items.add(new ShoppingListItem("7 Up"));
         items.add(new ShoppingListItem("Cucumber"));
 
-        ShoppingList list1 = new ShoppingList("Abendessen", cal, R.drawable.apple_icon, items);
+        ShoppingList list1 = new ShoppingList("Abendessen", cal, Icons.getRandomIcon(), items);
 
         items.add(new ShoppingListItem("4x Pasta a la Mama", true));
         items.add(new ShoppingListItem("4x Pasta a la Mama", true, true));
 
-        ShoppingList list2 = new ShoppingList("Wocheneinkauf", cal, R.drawable.carrot_icon, items);
-        ShoppingList list3 = new ShoppingList("Für Mum", cal2, R.drawable.sweet_icon);
+        ShoppingList list2 = new ShoppingList("Wocheneinkauf", cal, Icons.getRandomIcon(), items);
+        ShoppingList list3 = new ShoppingList("Für Mum", cal2, Icons.getRandomIcon());
 
         this.addList(list1);
         this.addList(list2);

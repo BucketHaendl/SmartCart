@@ -8,32 +8,26 @@ import com.buckethaendl.smartcart.R;
 public class Icons {
 
     private static final int[] ICONS = {
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            //Ab hier wiederholt es sich (nur zum test)
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
-            R.drawable.apple_icon,
-            R.drawable.carrot_icon,
-            R.drawable.garlic_icon,
-            R.drawable.icecream_icon,
-            R.drawable.sweet_icon,
+
+            R.drawable.list_apple_icon,
+            R.drawable.list_carrot_icon,
+            R.drawable.list_cherry_icon,
+            R.drawable.list_waterbottle_icon,
+            R.drawable.list_pizza_icon,
+            R.drawable.list_coffee_beam_icon,
+            R.drawable.list_chicken_icon,
+            R.drawable.list_conev_icon,
+            R.drawable.list_egg_icon,
+            R.drawable.list_food_icon,
+            R.drawable.list_garlic_icon,
+            R.drawable.list_guava_icon,
+            R.drawable.list_icecream_icon,
+            R.drawable.list_meat_icon,
+            R.drawable.list_strawberry_icon,
+            R.drawable.list_sweet_icon,
+            R.drawable.list_toffee_icon,
+            R.drawable.list_tomato_icon
+
     };
 
     private Icons() {

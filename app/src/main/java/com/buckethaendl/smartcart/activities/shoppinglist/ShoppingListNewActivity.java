@@ -375,7 +375,7 @@ public class ShoppingListNewActivity extends AppCompatActivity {
      */
     private class IconChooseListener implements IconChooseAdapter.IconChooseListener {
 
-        public static final int DEFAULT_ICON = R.drawable.apple_icon;
+        public static final int DEFAULT_ICON = R.drawable.list_apple_icon;
         private int iconId;
 
         public IconChooseListener() {
