@@ -1,9 +1,6 @@
 package com.buckethaendl.smartcart.activities.shoppinglist.adapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +14,6 @@ import com.buckethaendl.smartcart.activities.shoppinglist.listeners.ShoppingItem
 import com.buckethaendl.smartcart.activities.shoppinglist.listeners.ShoppingItemClickListener;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingList;
 import com.buckethaendl.smartcart.objects.shoppinglist.ShoppingListItem;
-import com.buckethaendl.smartcart.util.DialogBuildingSite;
 
 /**
  * Created by Cedric on 31.03.2016.
@@ -109,6 +105,9 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
         TextView textView = holder.getTextView();
         textView.setText(item.getDisplayName());
 
+        /*
+        removed
+
         final ImageButton error = holder.getImageButton();
 
         if(item.isUnknown()) {
@@ -155,7 +154,7 @@ public class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<Shoppi
 
             }
 
-        });
+        });*/
 
     }
 

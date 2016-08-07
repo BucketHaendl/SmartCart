@@ -21,7 +21,7 @@
     <!-- ShoppingListDetails -->
     <dimen name="shopping_list_item_checkbox_margin">10dp</dimen>
     <dimen name="shopping_list_item_outer_padding">5dp</dimen>
-    <dimen name="shopping_list_item_category_squaresize">25dp</dimen>
+    <dimen name="shopping_list_item_category_squaresize">26dp</dimen>
 
     <!-- ShoppingListAdd -->
     <dimen name="shopping_list_add_color_chooser_margin_horizontal">5dp</dimen>
